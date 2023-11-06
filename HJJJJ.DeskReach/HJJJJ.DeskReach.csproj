@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Entities\" />
+    <Folder Include="Utils\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="STTech.BytesIO.Core" Version="2.13.6-alpha0807" />
+    <PackageReference Include="STTech.BytesIO.Tcp" Version="2.13.3-alpha0707" />
+    <PackageReference Include="STTech.CodePlus" Version="1.6.4.3-alpha1016" />
+  </ItemGroup>
+
+</Project>
