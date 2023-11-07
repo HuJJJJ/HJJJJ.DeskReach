@@ -26,37 +26,7 @@ namespace HJJJJ.DeskReach.Plugins
         {
         }
 
-        /// <summary>
-        /// 鼠标操作事件
-        /// </summary>
-        /// <param name="e"></param>
-        public virtual void OnMouseOperate(PointerPacket e) { }
 
-        /// <summary>
-        /// 键盘操作
-        /// </summary>
-        /// <param name="e"></param>
-        public virtual void OnKeyboardEntryOperate(KeyboardPacket e)
-        {
-        }
-
-        /// <summary>
-        /// 屏幕操作
-        /// </summary>
-        /// <param name="e"></param>
-        public virtual void OnScreenOperate(ScreenPacket e)
-        {
-
-        }
-
-        ///// <summary>
-        ///// 画板操作
-        ///// </summary>
-        ///// <param name="e"></param>
-        //public virtual void OnDrawingBoardOperate(DrawingBoard e)
-        //{
-
-        //}
 
         /// <summary>
         /// 执行接收数据回调函数

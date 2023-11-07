@@ -21,10 +21,20 @@ namespace HJJJJ.DeskReach.Demo
         }
 
         private void button2_Click(object sender, EventArgs e)
-        {     //获取ip地址
-            var strs = textBox1.Text.Split(':');
-            Store.TargetIP = strs[0];
-            Store.TargetPort = Convert.ToInt32(strs[1]);
+        {
+            try
+            {
+                //获取ip地址
+                var strs = textBox1.Text.Split(':');
+                Store.TargetIP = strs[0];
+                Store.TargetPort = Convert.ToInt32(strs[1]);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("请确保连接地址正确\n例:192.168.1.1:4555");
+                return;
+            }
+
 
             //根据选择功能打开不同的窗体
             if (RemoteControlRadio.Checked)

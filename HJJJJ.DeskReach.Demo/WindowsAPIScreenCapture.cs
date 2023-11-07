@@ -36,7 +36,7 @@ public class WindowsAPIScreenCapture
         Int32 drRop         //光栅的操作值
 
         );
-    public static byte[] CaptureScreen()
+    public static byte[] CaptureScreen(int quality)
     {
         //创建显示器的DC
         IntPtr dcScreen = CreateDC("DISPLAY", null, null, (IntPtr)null);
@@ -71,8 +71,7 @@ public class WindowsAPIScreenCapture
 
         //保存图像并显示
         //
-
-        return SaveImageWithQuality(MyImage, 20);
+        return SaveImageWithQuality(MyImage, quality);
 
     }
 

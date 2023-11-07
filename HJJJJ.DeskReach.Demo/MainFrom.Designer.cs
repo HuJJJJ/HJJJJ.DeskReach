@@ -30,19 +30,21 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainFrom));
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.button2 = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.RemoteControlRadio = new System.Windows.Forms.RadioButton();
+            this.button3 = new System.Windows.Forms.Button();
             this.FileTransferRadio = new System.Windows.Forms.RadioButton();
+            this.RemoteControlRadio = new System.Windows.Forms.RadioButton();
+            this.label1 = new System.Windows.Forms.Label();
+            this.button2 = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.button3);
             this.panel1.Controls.Add(this.FileTransferRadio);
             this.panel1.Controls.Add(this.RemoteControlRadio);
             this.panel1.Controls.Add(this.label1);
@@ -57,48 +59,52 @@
             this.panel1.Size = new System.Drawing.Size(667, 219);
             this.panel1.TabIndex = 1;
             // 
-            // label2
+            // button3
             // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("微软雅黑", 10F);
-            this.label2.ForeColor = System.Drawing.SystemColors.AppWorkspace;
-            this.label2.Location = new System.Drawing.Point(34, 9);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(70, 27);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "设备IP";
+            this.button3.BackColor = System.Drawing.Color.White;
+            this.button3.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button3.BackgroundImage")));
+            this.button3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button3.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.button3.Location = new System.Drawing.Point(316, 35);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(60, 56);
+            this.button3.TabIndex = 9;
+            this.button3.UseVisualStyleBackColor = false;
+            this.button3.Click += new System.EventHandler(this.button1_Click);
             // 
-            // label3
+            // FileTransferRadio
             // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("微软雅黑", 16F);
-            this.label3.Location = new System.Drawing.Point(32, 36);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(259, 41);
-            this.label3.TabIndex = 2;
-            this.label3.Text = "127.0.0.1:45555";
+            this.FileTransferRadio.AutoSize = true;
+            this.FileTransferRadio.Location = new System.Drawing.Point(205, 185);
+            this.FileTransferRadio.Name = "FileTransferRadio";
+            this.FileTransferRadio.Size = new System.Drawing.Size(105, 22);
+            this.FileTransferRadio.TabIndex = 8;
+            this.FileTransferRadio.Text = "文件传输";
+            this.FileTransferRadio.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // RemoteControlRadio
             // 
-            this.button1.BackColor = System.Drawing.Color.White;
-            this.button1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button1.BackgroundImage")));
-            this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.button1.Location = new System.Drawing.Point(335, 24);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(58, 53);
-            this.button1.TabIndex = 3;
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.RemoteControlRadio.AutoSize = true;
+            this.RemoteControlRadio.Checked = true;
+            this.RemoteControlRadio.Location = new System.Drawing.Point(39, 185);
+            this.RemoteControlRadio.Name = "RemoteControlRadio";
+            this.RemoteControlRadio.Size = new System.Drawing.Size(105, 22);
+            this.RemoteControlRadio.TabIndex = 7;
+            this.RemoteControlRadio.TabStop = true;
+            this.RemoteControlRadio.Text = "远程控制";
+            this.RemoteControlRadio.UseVisualStyleBackColor = true;
             // 
-            // textBox1
+            // label1
             // 
-            this.textBox1.Location = new System.Drawing.Point(39, 107);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(428, 56);
-            this.textBox1.TabIndex = 4;
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("微软雅黑", 10F);
+            this.label1.ForeColor = System.Drawing.SystemColors.AppWorkspace;
+            this.label1.Location = new System.Drawing.Point(34, 77);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(132, 27);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "远程控制设备";
             // 
             // button2
             // 
@@ -114,38 +120,48 @@
             this.button2.UseVisualStyleBackColor = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // label1
+            // textBox1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("微软雅黑", 10F);
-            this.label1.ForeColor = System.Drawing.SystemColors.AppWorkspace;
-            this.label1.Location = new System.Drawing.Point(34, 77);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(132, 27);
-            this.label1.TabIndex = 6;
-            this.label1.Text = "远程控制设备";
+            this.textBox1.Location = new System.Drawing.Point(39, 107);
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(428, 56);
+            this.textBox1.TabIndex = 4;
             // 
-            // RemoteControlRadio
+            // button1
             // 
-            this.RemoteControlRadio.AutoSize = true;
-            this.RemoteControlRadio.Location = new System.Drawing.Point(39, 185);
-            this.RemoteControlRadio.Name = "RemoteControlRadio";
-            this.RemoteControlRadio.Size = new System.Drawing.Size(105, 22);
-            this.RemoteControlRadio.TabIndex = 7;
-            this.RemoteControlRadio.TabStop = true;
-            this.RemoteControlRadio.Text = "远程控制";
-            this.RemoteControlRadio.UseVisualStyleBackColor = true;
+            this.button1.BackColor = System.Drawing.Color.White;
+            this.button1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button1.BackgroundImage")));
+            this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.button1.Location = new System.Drawing.Point(328, 107);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(60, 56);
+            this.button1.TabIndex = 3;
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // FileTransferRadio
+            // label3
             // 
-            this.FileTransferRadio.AutoSize = true;
-            this.FileTransferRadio.Location = new System.Drawing.Point(205, 185);
-            this.FileTransferRadio.Name = "FileTransferRadio";
-            this.FileTransferRadio.Size = new System.Drawing.Size(105, 22);
-            this.FileTransferRadio.TabIndex = 8;
-            this.FileTransferRadio.TabStop = true;
-            this.FileTransferRadio.Text = "文件传输";
-            this.FileTransferRadio.UseVisualStyleBackColor = true;
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("微软雅黑", 16F);
+            this.label3.Location = new System.Drawing.Point(32, 36);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(259, 41);
+            this.label3.TabIndex = 2;
+            this.label3.Text = "127.0.0.1:45555";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("微软雅黑", 10F);
+            this.label2.ForeColor = System.Drawing.SystemColors.AppWorkspace;
+            this.label2.Location = new System.Drawing.Point(34, 9);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(70, 27);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "设备IP";
             // 
             // MainFrom
             // 
@@ -168,11 +184,12 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.RadioButton FileTransferRadio;
         private System.Windows.Forms.RadioButton RemoteControlRadio;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button1;
     }
 }

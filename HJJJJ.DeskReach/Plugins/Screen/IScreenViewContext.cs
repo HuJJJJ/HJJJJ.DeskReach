@@ -13,7 +13,7 @@ namespace HJJJJ.DeskReach.Plugins.Screen
         /// </summary>
         Rectangle Bounds { get; set; }
 
-        byte[] GetImage();
+        byte[] GetImage(int quality);
         void ShowImage(byte[] image);
     }
 }

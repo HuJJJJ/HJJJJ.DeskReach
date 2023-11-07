@@ -36,7 +36,7 @@ namespace HJJJJ.DeskReach.Plugins.Screen
         }
 
 
-        public ScreenPacket( ScreenActionType code, byte[] image=default, int imageQuality = 50)
+        public ScreenPacket(ScreenActionType code, byte[] image = default, int imageQuality = 50)
         {
             Code = code;
             Image = image;
@@ -48,8 +48,8 @@ namespace HJJJJ.DeskReach.Plugins.Screen
             List<byte> bytes = new List<byte>();
             bytes.Add((byte)Code);
             bytes.AddRange(ImageQuality.ToBytes());
-            if(Image!=null)
-            bytes.AddRange(Image);
+            if (Image != null)
+                bytes.AddRange(Image);
             return bytes.ToArray();
         }
     }

@@ -1,6 +1,8 @@
 ﻿using HJJJJ.DeskReach.Plugins.Pointer;
 using System;
 using System.Collections.Generic;
+using System.IO.Compression;
+using System.IO;
 using System.Text;
 using System.Threading;
 using System.Timers;
@@ -23,7 +25,7 @@ namespace HJJJJ.DeskReach.Plugins.Screen
             OnDataReceived += ScreenPlugin_OnDataReceived;
             frameQueue = new Queue<byte[]>();
             queueLock = new object();
-            timer.Interval = 1000 / 40;
+            timer.Interval = 1000 / 30;
             timer.Elapsed += SendFrame;
         }
         private int frameCount = 0;
@@ -44,10 +46,11 @@ namespace HJJJJ.DeskReach.Plugins.Screen
                     AutoResetEvent.Set();
                     break;
                 case ScreenActionType.ImageQuality:
+                    Quality = screen.ImageQuality;
                     break;
             }
         }
-
+        int Quality = 20;
 
 
         /// <summary>
@@ -55,9 +58,19 @@ namespace HJJJJ.DeskReach.Plugins.Screen
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
+        /// 
+        byte[] compressed;
         private void SendFrame(object sender, ElapsedEventArgs e)
         {
-            Action(new ScreenPacket(ScreenActionType.ImageFrame, ViewContext.GetImage()));
+            var input = ViewContext.GetImage(Quality);
+            // 压缩
+            using (var outputStream = new MemoryStream())
+            {
+                using (var gzipStream = new GZipStream(outputStream, CompressionMode.Compress))
+                    gzipStream.Write(input, 0, input.Length);
+                compressed = outputStream.ToArray();  // 压缩后的字节数组
+            }
+            Action(new ScreenPacket(ScreenActionType.ImageFrame, compressed));
             AutoResetEvent.WaitOne();
         }
 
@@ -78,6 +91,10 @@ namespace HJJJJ.DeskReach.Plugins.Screen
         {
             lock (queueLock)
             {
+                if (frameQueue.Count > 30)
+                {
+                    frameQueue.Clear();//清空队列
+                }
                 frameQueue.Enqueue(frame);
                 Monitor.Pulse(queueLock);
             }
@@ -88,38 +105,44 @@ namespace HJJJJ.DeskReach.Plugins.Screen
         /// </summary>
         private void ProcessingFramesThread()
         {
+            byte[] frame;
             while (true)
             {
-                byte[] frame;
-
                 lock (queueLock)
                 {
                     while (frameQueue.Count == 0)
                     {
                         Monitor.Wait(queueLock);
                     }
-
                     frame = frameQueue.Dequeue();
                 }
                 ProcessFrame(frame);
+
             }
         }
-
         /// <summary>
         /// 处理接收到的图片
         /// </summary>
         private void ProcessFrame(byte[] frame)
         {
-            ViewContext.ShowImage(frame);
+            // 解压缩
+            using (var inputStream = new MemoryStream(frame))
+            using (var gzipStream = new GZipStream(inputStream, CompressionMode.Decompress))
+            using (var outputStream = new MemoryStream())
+            {
+                gzipStream.CopyTo(outputStream);
+                byte[] decompressed = outputStream.ToArray();  // 解压后的字节数组
+                ViewContext.ShowImage(decompressed);
+            }
+
             frameCount++;
             // 检查是否达到了三秒钟
-            if (DateTime.Now - lastFrameTime >= TimeSpan.FromSeconds(3))
+            if (DateTime.Now - lastFrameTime >= TimeSpan.FromSeconds(1))
             {
                 // 显示帧率并重置帧数和计时器
                 Console.WriteLine($"接收端FPS: {frameCount}");
                 frameCount = 0;
                 lastFrameTime = DateTime.Now;
-                lock (queueLock) frameQueue.Clear();//清空队列
             }
         }
 
