@@ -1,8 +1,10 @@
 ﻿using HJJJJ.DeskReach.Plugins.Keyboard;
+using HJJJJ.DeskReach.Plugins.PluginMenu;
 using HJJJJ.DeskReach.Plugins.Pointer;
 using HJJJJ.DeskReach.Plugins.Screen;
 using System;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using System.Text;
 
 namespace HJJJJ.DeskReach.Plugins
@@ -12,7 +14,7 @@ namespace HJJJJ.DeskReach.Plugins
 
 
         IClient client;
-        internal void RegInit(IClient client)
+        internal virtual void RegInit(IClient client)
         {
             this.client = client;
         }
@@ -42,6 +44,12 @@ namespace HJJJJ.DeskReach.Plugins
         {
             var bytes = new BasePackage(packet.PluginName, packet.GetBytes()).GetBytes();
             client.Send(bytes);
+        }
+
+        protected void xxx(BasePacket packet) 
+        {
+            var bytes = new BasePackage(packet.PluginName, packet.GetBytes()).GetBytes();
+            client.ServerSend(bytes);
         }
 
         /// <summary>

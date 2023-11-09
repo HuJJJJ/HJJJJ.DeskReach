@@ -34,8 +34,12 @@ public class WindowsAPIScreenCapture
         int XScr,           //源设备的左上角X坐标
         int YScr,           //源设备的左上角Y坐标
         Int32 drRop         //光栅的操作值
-
         );
+        [DllImport("gdi32.dll", EntryPoint = "GetDeviceCaps", SetLastError = true)]
+        private static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+
+
+
     public static byte[] CaptureScreen(int quality)
     {
         //创建显示器的DC
@@ -67,8 +71,6 @@ public class WindowsAPIScreenCapture
         g1.ReleaseHdc(dc1);
         //释放位图的上下文设备
         g2.ReleaseHdc(dc2);
-
-
         //保存图像并显示
         //
         return SaveImageWithQuality(MyImage, quality);
@@ -78,9 +80,8 @@ public class WindowsAPIScreenCapture
     private static byte[] SaveImageWithQuality(System.Drawing.Image image, long level)
     {
         ImageCodecInfo jpegEncoder = GetEncoder(ImageFormat.Jpeg);
-        Encoder myEncoder = Encoder.Quality;
         EncoderParameters encoderParameters = new EncoderParameters(1);
-        EncoderParameter encoderParameter = new EncoderParameter(myEncoder, level);
+        EncoderParameter encoderParameter = new EncoderParameter(Encoder.Quality, level);
         encoderParameters.Param[0] = encoderParameter;
 
         using (MemoryStream ms = new MemoryStream())

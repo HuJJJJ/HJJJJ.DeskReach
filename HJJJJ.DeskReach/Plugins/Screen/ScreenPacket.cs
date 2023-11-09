@@ -30,7 +30,7 @@ namespace HJJJJ.DeskReach.Plugins.Screen
         public override string PluginName { get; } = "HJJJJ.DeskReach.Plugins.Screen.ScreenPlugin";
         public ScreenPacket(IEnumerable<byte> bytes) : base(bytes)
         {
-            Code = (ScreenActionType)bytes.Take(1).First();
+            Code = (ScreenActionType)bytes.First();
             ImageQuality = bytes.Skip(1).Take(4).ToInt();
             Image = bytes.Skip(5).ToArray();
         }

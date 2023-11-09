@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HJJJJ.DeskReach.Plugins.Dra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HJJJJ.DeskReach.Demo", "HJJJJ.DeskReach.Demo\HJJJJ.DeskReach.Demo.csproj", "{903F998C-3F87-4EE3-B496-1208B9BFDA75}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HJJJJ.DeskReach.Plugins.TextMessage.Windows", "HJJJJ.DeskReach.Plugins.TextMessage.Windows\HJJJJ.DeskReach.Plugins.TextMessage.Windows.csproj", "{BFFE2CCB-8496-446D-BF66-156B5FD5A33A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{903F998C-3F87-4EE3-B496-1208B9BFDA75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{903F998C-3F87-4EE3-B496-1208B9BFDA75}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{903F998C-3F87-4EE3-B496-1208B9BFDA75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFFE2CCB-8496-446D-BF66-156B5FD5A33A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFFE2CCB-8496-446D-BF66-156B5FD5A33A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFFE2CCB-8496-446D-BF66-156B5FD5A33A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFFE2CCB-8496-446D-BF66-156B5FD5A33A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

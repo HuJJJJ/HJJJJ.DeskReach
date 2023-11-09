@@ -6,17 +6,21 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Timers;
+using HJJJJ.DeskReach.Plugins.PluginMenu;
 
 namespace HJJJJ.DeskReach.Plugins.Screen
 {
     public class ScreenPlugin : BasePlugin
     {
+        private const string PluginName = "HJJJJ.DeskReach.Plugins.Screen.ScreenPlugin";
         public IScreenViewContext ViewContext { get; set; }
         public new event EventHandler<byte[]> OnDataReceived;
         private AutoResetEvent AutoResetEvent = new AutoResetEvent(false);
         System.Timers.Timer timer = new System.Timers.Timer();
         private Queue<byte[]> frameQueue;//接收队列
         private object queueLock;
+        private int frameCount = 0;
+        private DateTime lastFrameTime;
 
 
         public ScreenPlugin(IScreenViewContext viewContext)
@@ -28,8 +32,26 @@ namespace HJJJJ.DeskReach.Plugins.Screen
             timer.Interval = 1000 / 30;
             timer.Elapsed += SendFrame;
         }
-        private int frameCount = 0;
-        private DateTime lastFrameTime;
+
+
+        internal override void RegInit(IClient client)
+        {
+            base.RegInit(client);
+            ViewMenu viewMenu = new ViewMenu()
+            {
+                PluginName = PluginName,
+                MenuItems = { new MenuItem(TestBtn)
+                {
+                Text="实验按钮",
+                Type = MenuItemType.Button,
+                } }
+            };
+        }
+
+        public void TestBtn(object s)
+        {
+            Console.WriteLine("啦啦啦啦啦啦啦");
+        }
         private void ScreenPlugin_OnDataReceived(object sender, byte[] e)
         {
             var screen = new ScreenPacket(e);
@@ -40,7 +62,7 @@ namespace HJJJJ.DeskReach.Plugins.Screen
                     break;
                 case ScreenActionType.ImageFrame:
                     EnqueueFrame(screen.Image);
-                    SendAck();
+                    //SendAck();
                     break;
                 case ScreenActionType.ImageACKFrame:
                     AutoResetEvent.Set();
@@ -71,7 +93,7 @@ namespace HJJJJ.DeskReach.Plugins.Screen
                 compressed = outputStream.ToArray();  // 压缩后的字节数组
             }
             Action(new ScreenPacket(ScreenActionType.ImageFrame, compressed));
-            AutoResetEvent.WaitOne();
+            //AutoResetEvent.WaitOne();
         }
 
         /// <summary>

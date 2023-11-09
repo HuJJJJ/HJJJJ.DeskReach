@@ -14,10 +14,14 @@ namespace HJJJJ.DeskReach.Demo
 {
     public partial class MainFrom : Form
     {
-
+        RemoteControlFrom remoteControlFrom;
         public MainFrom()
         {
             InitializeComponent();
+            //初始化组件并启动接收程序
+            remoteControlFrom = new RemoteControlFrom();
+            Store.BuidingPlugin(remoteControlFrom, remoteControlFrom, remoteControlFrom);
+            textBox2.Text = "127.0.0.1:455";
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -39,7 +43,8 @@ namespace HJJJJ.DeskReach.Demo
             //根据选择功能打开不同的窗体
             if (RemoteControlRadio.Checked)
             {
-                new RemoteControlFrom().ShowDialog();
+                Store.ClientConnect();
+                remoteControlFrom.ShowDialog();
             }
             else if (FileTransferRadio.Checked)
             {
@@ -51,5 +56,18 @@ namespace HJJJJ.DeskReach.Demo
         {
             Clipboard.SetDataObject(label3.Text);
         }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            var strs = textBox2.Text.Split(':');
+            Store.ServerConnect(strs[0], Convert.ToInt32(strs[1]));
+        }
+
+        private void MainFrom_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Application.Exit();
+        }
+
+
     }
 }
