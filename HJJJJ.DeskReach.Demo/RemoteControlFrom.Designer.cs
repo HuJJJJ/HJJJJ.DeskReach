@@ -48,23 +48,24 @@
             // 
             // panel2
             // 
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(956, 607);
+            this.panel2.Size = new System.Drawing.Size(956, 644);
             this.panel2.TabIndex = 7;
             // 
             // panel1
             // 
             this.panel1.Controls.Add(this.toolStrip);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 610);
+            this.panel1.Location = new System.Drawing.Point(0, 601);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(956, 34);
+            this.panel1.Size = new System.Drawing.Size(956, 43);
             this.panel1.TabIndex = 8;
             // 
             // toolStrip
             // 
+            this.toolStrip.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.BrushStatus_Btn,
@@ -79,7 +80,7 @@
             this.toolStripButton5});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
-            this.toolStrip.Size = new System.Drawing.Size(956, 33);
+            this.toolStrip.Size = new System.Drawing.Size(956, 43);
             this.toolStrip.TabIndex = 7;
             this.toolStrip.Text = "toolStrip1";
             // 
@@ -89,7 +90,7 @@
             this.BrushStatus_Btn.Image = ((System.Drawing.Image)(resources.GetObject("BrushStatus_Btn.Image")));
             this.BrushStatus_Btn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.BrushStatus_Btn.Name = "BrushStatus_Btn";
-            this.BrushStatus_Btn.Size = new System.Drawing.Size(50, 28);
+            this.BrushStatus_Btn.Size = new System.Drawing.Size(50, 38);
             this.BrushStatus_Btn.Text = "画笔";
             // 
             // BrushColor_Btn
@@ -98,14 +99,14 @@
             this.BrushColor_Btn.Image = ((System.Drawing.Image)(resources.GetObject("BrushColor_Btn.Image")));
             this.BrushColor_Btn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.BrushColor_Btn.Name = "BrushColor_Btn";
-            this.BrushColor_Btn.Size = new System.Drawing.Size(86, 28);
+            this.BrushColor_Btn.Size = new System.Drawing.Size(86, 38);
             this.BrushColor_Btn.Text = "画笔颜色";
             // 
             // BrushSizeComboBox
             // 
             this.BrushSizeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.BrushSizeComboBox.Name = "BrushSizeComboBox";
-            this.BrushSizeComboBox.Size = new System.Drawing.Size(100, 33);
+            this.BrushSizeComboBox.Size = new System.Drawing.Size(100, 43);
             // 
             // ClearDrawingBoard
             // 
@@ -113,7 +114,7 @@
             this.ClearDrawingBoard.Image = ((System.Drawing.Image)(resources.GetObject("ClearDrawingBoard.Image")));
             this.ClearDrawingBoard.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.ClearDrawingBoard.Name = "ClearDrawingBoard";
-            this.ClearDrawingBoard.Size = new System.Drawing.Size(86, 28);
+            this.ClearDrawingBoard.Size = new System.Drawing.Size(86, 38);
             this.ClearDrawingBoard.Text = "清空画板";
             // 
             // toolStripButton2
@@ -122,13 +123,13 @@
             this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
             this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(86, 28);
+            this.toolStripButton2.Size = new System.Drawing.Size(86, 38);
             this.toolStripButton2.Text = "关闭画板";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 33);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 43);
             // 
             // comboBox1
             // 
@@ -147,7 +148,7 @@
             this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
             this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(0, 28);
+            this.toolStripButton3.Size = new System.Drawing.Size(0, 38);
             this.toolStripButton3.Text = "toolStripButton3";
             // 
             // toolStripButton4
@@ -158,7 +159,7 @@
             this.toolStripButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton4.Image")));
             this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton4.Name = "toolStripButton4";
-            this.toolStripButton4.Size = new System.Drawing.Size(82, 28);
+            this.toolStripButton4.Size = new System.Drawing.Size(82, 38);
             this.toolStripButton4.Text = "视频质量";
             // 
             // toolStripButton5
@@ -167,7 +168,7 @@
             this.toolStripButton5.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton5.Image")));
             this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton5.Name = "toolStripButton5";
-            this.toolStripButton5.Size = new System.Drawing.Size(34, 28);
+            this.toolStripButton5.Size = new System.Drawing.Size(34, 38);
             this.toolStripButton5.Text = "toolStripButton5";
             this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
             // 

@@ -35,11 +35,30 @@ public class WindowsAPIScreenCapture
         int YScr,           //源设备的左上角Y坐标
         Int32 drRop         //光栅的操作值
         );
-        [DllImport("gdi32.dll", EntryPoint = "GetDeviceCaps", SetLastError = true)]
-        private static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+    [DllImport("gdi32.dll", EntryPoint = "GetDeviceCaps", SetLastError = true)]
+    private static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+    private enum DeviceCap
+    {
+        VERTRES = 10,
+        PHYSICALWIDTH = 110,
+        SCALINGFACTORX = 114,
+        DESKTOPVERTRES = 117,
+    }
 
+    /// <summary>
+    /// 获取屏幕缩放比例
+    /// </summary>
+    /// <returns></returns>
+    public static double GetScreenScalingFactor()
+    {
+        var g = Graphics.FromHwnd(IntPtr.Zero);
+        IntPtr desktop = g.GetHdc();
+        var physicalScreenHeight = GetDeviceCaps(desktop, (int)DeviceCap.DESKTOPVERTRES);
+        var screenScalingFactor = (double)physicalScreenHeight / Screen.PrimaryScreen.Bounds.Height;
+        //SystemParameters.PrimaryScreenHeight;
 
-
+        return screenScalingFactor;
+    }
     public static byte[] CaptureScreen(int quality)
     {
         //创建显示器的DC
@@ -49,45 +68,42 @@ public class WindowsAPIScreenCapture
         Graphics g1 = Graphics.FromHdc(dcScreen);
         int tmpWidth, tmpHeigth;
 
-
-        //获得保存图片的质量
-        //  long level = long.Parse(this.textBox5.Text);
-
-        tmpWidth = Screen.PrimaryScreen.Bounds.Width;
-        tmpHeigth = Screen.PrimaryScreen.Bounds.Height;
+        //tmpWidth = Screen.PrimaryScreen.Bounds.Width;
+        //tmpHeigth = Screen.PrimaryScreen.Bounds.Height;
+        var scalingFactor = GetScreenScalingFactor();
+        tmpWidth = Convert.ToInt32(Screen.PrimaryScreen.Bounds.Width * scalingFactor);
+        tmpHeigth = Convert.ToInt32(Screen.PrimaryScreen.Bounds.Height * scalingFactor);
         System.Drawing.Image MyImage = new Bitmap(tmpWidth, tmpHeigth, g1);
-
         //创建位图图形对象
         Graphics g2 = Graphics.FromImage(MyImage);
         //获得窗体的上下文设备
         IntPtr dc1 = g1.GetHdc();
         //获得位图文件的上下文设备
         IntPtr dc2 = g2.GetHdc();
-
         //写入到位图
         BitBlt(dc2, 0, 0, tmpWidth, tmpHeigth, dc1, 0, 0, 13369376);
-
         //释放窗体的上下文设备
         g1.ReleaseHdc(dc1);
         //释放位图的上下文设备
         g2.ReleaseHdc(dc2);
-        //保存图像并显示
-        //
-        return SaveImageWithQuality(MyImage, quality);
-
+        var image = MyImage.GetThumbnailImage(tmpWidth / 3, tmpHeigth / 3, null, IntPtr.Zero);
+        MyImage.Dispose();
+        return ZipImage(image, quality);
     }
 
-    private static byte[] SaveImageWithQuality(System.Drawing.Image image, long level)
+    private static byte[] ZipImage(System.Drawing.Image image, long level)
     {
+
         ImageCodecInfo jpegEncoder = GetEncoder(ImageFormat.Jpeg);
         EncoderParameters encoderParameters = new EncoderParameters(1);
         EncoderParameter encoderParameter = new EncoderParameter(Encoder.Quality, level);
         encoderParameters.Param[0] = encoderParameter;
-
         using (MemoryStream ms = new MemoryStream())
         {
             image.Save(ms, jpegEncoder, encoderParameters);
-            return ms.ToArray();
+            var a = ms.ToArray();
+            image.Dispose();
+            return a;
         }
 
     }

@@ -11,9 +11,31 @@ namespace HJJJJ.DeskReach.Plugins
 {
     public class BasePlugin
     {
-
-
         IClient client;
+
+
+        public virtual MenuItem[] GetMenuItems(MenuPosition pos)
+        {
+            switch (pos)
+            {
+                case MenuPosition.TopMenu:
+                    {
+                        return new MenuItem[]
+                        {
+                            new ButtonMenuItem() {Name = "高清" },
+                            new ButtonMenuItem() {Name = "标清" },
+                            new ButtonMenuItem() {Name = "流畅" },
+                        };
+                    }
+                case MenuPosition.Screen:
+                    break;
+                case MenuPosition.ToolBar:
+                    break;
+            }
+            return null;
+        }
+
+
         internal virtual void RegInit(IClient client)
         {
             this.client = client;
@@ -21,7 +43,7 @@ namespace HJJJJ.DeskReach.Plugins
         /// <summary>
         /// 在接收到数据时发生
         /// </summary>
-        public  event EventHandler<byte[]> OnDataReceived;
+        public event EventHandler<byte[]> OnDataReceived;
 
 
         protected virtual void OnLoad(EventArgs e)
@@ -44,12 +66,6 @@ namespace HJJJJ.DeskReach.Plugins
         {
             var bytes = new BasePackage(packet.PluginName, packet.GetBytes()).GetBytes();
             client.Send(bytes);
-        }
-
-        protected void xxx(BasePacket packet) 
-        {
-            var bytes = new BasePackage(packet.PluginName, packet.GetBytes()).GetBytes();
-            client.ServerSend(bytes);
         }
 
         /// <summary>

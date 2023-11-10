@@ -20,7 +20,7 @@ namespace HJJJJ.DeskReach.Demo
             InitializeComponent();
             //初始化组件并启动接收程序
             remoteControlFrom = new RemoteControlFrom();
-            Store.BuidingPlugin(remoteControlFrom, remoteControlFrom, remoteControlFrom);
+            Store.BuidingPlugin(remoteControlFrom, remoteControlFrom, remoteControlFrom, remoteControlFrom);
             textBox2.Text = "127.0.0.1:455";
         }
 

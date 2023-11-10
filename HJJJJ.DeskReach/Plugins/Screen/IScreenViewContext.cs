@@ -15,5 +15,7 @@ namespace HJJJJ.DeskReach.Plugins.Screen
 
         byte[] GetImage(int quality);
         void ShowImage(byte[] image);
+
+
     }
 }

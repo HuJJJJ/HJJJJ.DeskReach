@@ -1,4 +1,5 @@
-﻿using HJJJJ.DeskReach.Plugins.Pointer;
+﻿using HJJJJ.DeskReach.Plugins.Keyboard;
+using HJJJJ.DeskReach.Plugins.Pointer;
 using HJJJJ.DeskReach.Plugins.Screen;
 using HJJJJ.DeskReach.Plugins.TextMessage.Windows;
 using System;
@@ -20,7 +21,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace HJJJJ.DeskReach.Demo
 {
-    public partial class RemoteControlFrom : Form, IPointerViewContext, IScreenViewContext, ITextMessageViewContext
+    public partial class RemoteControlFrom : Form, IPointerViewContext, IScreenViewContext, ITextMessageViewContext, IKeyboardViewContext
     {
 
         private int frameCount = 0;
@@ -34,6 +35,8 @@ namespace HJJJJ.DeskReach.Demo
             InitializeComponent();
             CheckForIllegalCrossThreadCalls = false;
             Area = Screen.GetBounds(this);
+            //监听键盘
+            this.KeyPress += MainForm_KeyPress;
             InitView();
         }
 
@@ -69,7 +72,11 @@ namespace HJJJJ.DeskReach.Demo
         }
 
 
-
+        /// <summary>
+        /// 获取当前屏幕的截图
+        /// </summary>
+        /// <param name="quality"></param>
+        /// <returns></returns>
         public byte[] GetImage(int quality)
         {
             var sendFrame = WindowsAPIScreenCapture.CaptureScreen(quality);
@@ -84,10 +91,12 @@ namespace HJJJJ.DeskReach.Demo
             return sendFrame;
         }
 
-
+        /// <summary>
+        /// 显示回传的图片
+        /// </summary>
+        /// <param name="image"></param>
         public void ShowImage(byte[] image)
         {
-
             var tempFrame = image.BytesToBitmap();
             int targetWidth = this.pictureBox.Width;
             int targetHeight = (int)((float)tempFrame.Height / tempFrame.Width * targetWidth);
@@ -105,6 +114,16 @@ namespace HJJJJ.DeskReach.Demo
                 frameCount = 0;
                 lastFrameTime = DateTime.Now;
             }
+        }
+
+        /// <summary>
+        /// 监听键盘事件并发送给受控端
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MainForm_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            Store.keyboard.Action(new KeyboardPacket(KeyboardActionType.Single, e.KeyChar.ToString()));
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -149,7 +168,7 @@ namespace HJJJJ.DeskReach.Demo
 
         private void toolStripButton5_Click(object sender, EventArgs e)
         {
-            
+
             Store.textMessage.Action(new TextMessagePacket("我是奥特曼", TextMessageActionType.SendMessage));
         }
 
@@ -193,6 +212,12 @@ namespace HJJJJ.DeskReach.Demo
                 }
             }
         }
+
+        /// <summary>
+        /// 模拟按键输入
+        /// </summary>
+        /// <param name="keyCahr"></param>
+        public void SendKey(string keyCahr) => SendKeys.SendWait(keyCahr);
     }
 
 

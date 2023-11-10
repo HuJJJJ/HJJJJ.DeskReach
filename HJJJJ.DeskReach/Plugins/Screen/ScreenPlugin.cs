@@ -13,8 +13,8 @@ namespace HJJJJ.DeskReach.Plugins.Screen
     public class ScreenPlugin : BasePlugin
     {
         private const string PluginName = "HJJJJ.DeskReach.Plugins.Screen.ScreenPlugin";
-        public IScreenViewContext ViewContext { get; set; }
-        public new event EventHandler<byte[]> OnDataReceived;
+        private IScreenViewContext ViewContext { get; set; }
+        private new event EventHandler<byte[]> OnDataReceived;
         private AutoResetEvent AutoResetEvent = new AutoResetEvent(false);
         System.Timers.Timer timer = new System.Timers.Timer();
         private Queue<byte[]> frameQueue;//接收队列
@@ -37,21 +37,9 @@ namespace HJJJJ.DeskReach.Plugins.Screen
         internal override void RegInit(IClient client)
         {
             base.RegInit(client);
-            ViewMenu viewMenu = new ViewMenu()
-            {
-                PluginName = PluginName,
-                MenuItems = { new MenuItem(TestBtn)
-                {
-                Text="实验按钮",
-                Type = MenuItemType.Button,
-                } }
-            };
+
         }
 
-        public void TestBtn(object s)
-        {
-            Console.WriteLine("啦啦啦啦啦啦啦");
-        }
         private void ScreenPlugin_OnDataReceived(object sender, byte[] e)
         {
             var screen = new ScreenPacket(e);
@@ -139,7 +127,7 @@ namespace HJJJJ.DeskReach.Plugins.Screen
                     frame = frameQueue.Dequeue();
                 }
                 ProcessFrame(frame);
-
+               // SendAck();
             }
         }
         /// <summary>

@@ -8,7 +8,7 @@ namespace HJJJJ.DeskReach.Plugins.Pointer
 {
     public class PointerPlugin : BasePlugin
     {
-        public new event EventHandler<byte[]> OnDataReceived;
+        private new event EventHandler<byte[]> OnDataReceived;
         private IPointerViewContext ViewContext { get; set; }
 
         public PointerPlugin(IPointerViewContext viewContext)
@@ -18,16 +18,16 @@ namespace HJJJJ.DeskReach.Plugins.Pointer
         }
 
         /// <summary>
-        /// 操作鼠标
-        /// </summary>
-        public void Action(PointerPacket packet) => Send(packet);
-
-        /// <summary>
         /// 接收消息处理事件
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         public override void RaiseDataReceived(object sender, byte[] e) => SafelyInvokeCallback(() => { OnDataReceived?.Invoke(sender, e); });
+
+        /// <summary>
+        /// 操作鼠标
+        /// </summary>
+        public void Action(PointerPacket packet) => Send(packet);
 
         private void PointerPlugin_OnReceived(object sender, byte[] bytes)
         {

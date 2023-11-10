@@ -10,9 +10,7 @@ namespace HJJJJ.DeskReach
         /// <param name="request"></param>
         public void Send(byte[] data) => SendBytes(data);
 
-
         protected abstract void SendBytes(byte[] bytes);
-        public abstract void ServerSend(byte[] bytes);
         protected abstract void ReceivedBytes(BasePackage response);
 
     }

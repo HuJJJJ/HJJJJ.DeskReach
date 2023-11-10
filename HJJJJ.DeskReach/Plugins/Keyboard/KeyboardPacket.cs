@@ -29,6 +29,12 @@ namespace HJJJJ.DeskReach.Plugins.Keyboard
             KeyChars = Encoding.UTF8.GetString(bytes.Skip(1).ToArray());
         }
 
+        public KeyboardPacket(KeyboardActionType code , string keyChars)
+        {
+            Code = code;
+            KeyChars = keyChars;
+        }
+
         public override byte[] GetBytes()
         {
             List<byte> bytes = new List<byte>();

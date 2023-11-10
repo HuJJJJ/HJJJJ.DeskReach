@@ -132,10 +132,6 @@ namespace HJJJJ.DeskReach
                 });
         }
 
-        public override void ServerSend(byte[] bytes)
-        {
-        
-        }
         protected override void SendBytes(byte[] bytes)
         {
             switch (Role)
