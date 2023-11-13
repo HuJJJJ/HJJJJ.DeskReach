@@ -37,6 +37,7 @@
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Name = "DrawForm";
             this.Text = "DrawForm";
+            this.Load += new System.EventHandler(this.DrawForm_Load);
             this.ResumeLayout(false);
 
         }

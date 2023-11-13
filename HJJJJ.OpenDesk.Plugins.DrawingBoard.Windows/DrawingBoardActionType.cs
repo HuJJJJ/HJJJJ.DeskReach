@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows
 {
-    internal enum DrawingBoardActionType
+    public enum DrawingBoardActionType
     {
         /// <summary>
         /// 打开画板
@@ -26,6 +26,11 @@ namespace HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows
         /// <summary>
         /// 清空画板
         /// </summary>
-        ClearDrawingBoard
+        ClearDrawingBoard,
+
+        /// <summary>
+        /// 确认帧
+        /// </summary>
+        ACK,
     }
 }

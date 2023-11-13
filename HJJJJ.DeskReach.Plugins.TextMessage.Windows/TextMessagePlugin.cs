@@ -41,7 +41,7 @@ namespace HJJJJ.DeskReach.Plugins.TextMessage.Windows
 
 
         /// <summary>
-        /// 操作鼠标
+        /// 文本操作
         /// </summary>
         public void Action(TextMessagePacket packet) => Send(packet);
     }

@@ -122,6 +122,7 @@ namespace HJJJJ.DeskReach
 
         protected override void ReceivedBytes(BasePackage response)
         {
+          var a =  response.PluginName;
             Plugins
                 .ForEach(x =>
                 {

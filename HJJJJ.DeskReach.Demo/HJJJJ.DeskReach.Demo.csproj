@@ -85,8 +85,14 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RemoteControlFrom.DrawingBoard.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Store.cs" />
     <Compile Include="WindowsAPIScreenCapture.cs" />
+    <EmbeddedResource Include="FileTransferFrom.resx">
+      <DependentUpon>FileTransferFrom.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MasterForm.resx">
       <DependentUpon>MasterForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -127,6 +133,10 @@
     <ProjectReference Include="..\HJJJJ.DeskReach\HJJJJ.DeskReach.csproj">
       <Project>{2e704b6a-fd38-4fc1-aa32-ba6905a0fcc8}</Project>
       <Name>HJJJJ.DeskReach</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows\HJJJJ.DeskReach.Plugins.DrawingBoard.Windows.csproj">
+      <Project>{814aa28e-efd4-4112-a7c5-d5e562378cd1}</Project>
+      <Name>HJJJJ.DeskReach.Plugins.DrawingBoard.Windows</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

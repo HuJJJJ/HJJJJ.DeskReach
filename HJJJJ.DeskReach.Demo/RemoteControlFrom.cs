@@ -2,6 +2,8 @@
 using HJJJJ.DeskReach.Plugins.Pointer;
 using HJJJJ.DeskReach.Plugins.Screen;
 using HJJJJ.DeskReach.Plugins.TextMessage.Windows;
+using HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows;
+using HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,6 +20,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 namespace HJJJJ.DeskReach.Demo
 {
@@ -28,6 +31,8 @@ namespace HJJJJ.DeskReach.Demo
         private DateTime lastFrameTime;
         private System.Windows.Forms.Label fpsLabel;
         private PictureBox pictureBox;
+
+
         public Rectangle Area { get; set; }
 
         public RemoteControlFrom()
@@ -62,13 +67,24 @@ namespace HJJJJ.DeskReach.Demo
             });
             comboBox1.SelectedIndex = 1;
 
+            //设置画板字体
+            BrushSizeComboBox.Items.AddRange(new object[] { "小号", "中号", "大号", "超大号" });
+            BrushSizeComboBox.SelectedIndex = 0;
+
             //视频显示框
             pictureBox = new PictureBox();
             pictureBox.Dock = DockStyle.Fill;
-            pictureBox.MouseClick += (object sender, MouseEventArgs e) => Store.pointer.Action(new PointerPacket(new Point() { X = e.X * 100 / pictureBox.Width, Y = e.Y * 100 / pictureBox.Height }, PointerActionType.Left));
-            pictureBox.MouseDoubleClick += (object sender, MouseEventArgs e) => Store.pointer.Action(new PointerPacket(new Point() { X = e.X * 100 / pictureBox.Width, Y = e.Y * 100 / pictureBox.Height }, PointerActionType.DoubleLeft));
-            pictureBox.MouseWheel += (object sender, MouseEventArgs e) => Store.pointer.Action(new PointerPacket(new Point() { X = e.X * 100 / pictureBox.Width, Y = e.Y * 100 / pictureBox.Height }, PointerActionType.MouseWheel, e.Delta));
+
+            ///界面的鼠标控制事件
+            pictureBox.MouseClick += (object sender, MouseEventArgs e) => { if (!IsDrawing) Store.pointer.Action(new PointerPacket(new Point() { X = e.X * 100 / pictureBox.Width, Y = e.Y * 100 / pictureBox.Height }, PointerActionType.Left)); };
+            pictureBox.MouseDoubleClick += (object sender, MouseEventArgs e) => { if (!IsDrawing) Store.pointer.Action(new PointerPacket(new Point() { X = e.X * 100 / pictureBox.Width, Y = e.Y * 100 / pictureBox.Height }, PointerActionType.DoubleLeft)); };
+            pictureBox.MouseWheel += (object sender, MouseEventArgs e) => { if (!IsDrawing) Store.pointer.Action(new PointerPacket(new Point() { X = e.X * 100 / pictureBox.Width, Y = e.Y * 100 / pictureBox.Height }, PointerActionType.MouseWheel, e.Delta)); };
             panel2.Controls.Add(pictureBox);
+
+            //picbox加入画板功能
+            pictureBox.MouseDown += new MouseEventHandler(TransparentPanel_MouseDown);
+            pictureBox.MouseUp += new MouseEventHandler(TransparentPanel_MouseUp);
+            pictureBox.MouseMove += new MouseEventHandler(OnMouseMove);
         }
 
 
@@ -80,14 +96,14 @@ namespace HJJJJ.DeskReach.Demo
         public byte[] GetImage(int quality)
         {
             var sendFrame = WindowsAPIScreenCapture.CaptureScreen(quality);
-            frameCount++;
-            if (DateTime.Now - lastFrameTime >= TimeSpan.FromSeconds(1))
-            {
-                // 显示帧率并重置帧数和计时器
-                fpsLabel.Text = $"FPS: {frameCount}";
-                frameCount = 0;
-                lastFrameTime = DateTime.Now;
-            }
+            //frameCount++;
+            //if (DateTime.Now - lastFrameTime >= TimeSpan.FromSeconds(1))
+            //{
+            //    // 显示帧率并重置帧数和计时器
+            //    fpsLabel.Text = $"FPS: {frameCount}";
+            //    frameCount = 0;
+            //    lastFrameTime = DateTime.Now;
+            //}
             return sendFrame;
         }
 
@@ -218,6 +234,54 @@ namespace HJJJJ.DeskReach.Demo
         /// </summary>
         /// <param name="keyCahr"></param>
         public void SendKey(string keyCahr) => SendKeys.SendWait(keyCahr);
+
+        private void BrushStatus_Btn_Click(object sender, EventArgs e)
+        {
+            IsDrawing = true;
+            Store.drawingBoard.Action(new DrawingBoardPacket(DrawingBoardActionType.OpenDrawingBoard));
+        }
+
+        private void ClearDrawingBoard_Click(object sender, EventArgs e)
+        {
+            mouseTrack.Clear();
+            Store.drawingBoard.Drawing(mouseTrack);
+        }
+
+        private void BrushColor_Btn_Click(object sender, EventArgs e)
+        {
+            colorDialog1.ShowDialog();
+            this.LineSegmentColor = colorDialog1.Color;
+        }
+
+        private void CloseDrawingBoard_Click(object sender, EventArgs e)
+        {
+            IsDrawing = false;
+            Store.drawingBoard.Action(new DrawingBoardPacket(DrawingBoardActionType.CloseDrawingBoard));
+            ClearDrawingBoard_Click(null,null);
+        }
+
+        private void BrushSizeComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (this.BrushSizeComboBox.SelectedItem.ToString())
+            {
+                case "小号":
+                    this.LineSegmentWidth = 2;
+                    break;
+                case "中号":
+                    this.LineSegmentWidth = 5;
+                    break;
+                case "大号":
+                    this.LineSegmentWidth = 10;
+                    break;
+                case "超大号":
+                    this.LineSegmentWidth = 15;
+                    break;
+                default:
+                    this.LineSegmentWidth = 2;
+                    break;
+
+            }
+        }
     }
 
 

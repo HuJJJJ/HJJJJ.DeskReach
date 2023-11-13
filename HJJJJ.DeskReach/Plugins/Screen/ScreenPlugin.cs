@@ -52,7 +52,7 @@ namespace HJJJJ.DeskReach.Plugins.Screen
                     EnqueueFrame(screen.Image);
                     //SendAck();
                     break;
-                case ScreenActionType.ImageACKFrame:
+                case ScreenActionType.ACK:
                     AutoResetEvent.Set();
                     break;
                 case ScreenActionType.ImageQuality:
@@ -127,7 +127,7 @@ namespace HJJJJ.DeskReach.Plugins.Screen
                     frame = frameQueue.Dequeue();
                 }
                 ProcessFrame(frame);
-               // SendAck();
+                // SendAck();
             }
         }
         /// <summary>
@@ -156,7 +156,7 @@ namespace HJJJJ.DeskReach.Plugins.Screen
             }
         }
 
-        private void SendAck() => Action(new ScreenPacket(ScreenActionType.ImageACKFrame));
+        private void SendAck() => Action(new ScreenPacket(ScreenActionType.ACK));
 
         public void Action(ScreenPacket packet) => Send(packet);
 

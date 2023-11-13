@@ -18,7 +18,7 @@ namespace HJJJJ.DeskReach.Demo
         [STAThread]
         static void Main()
         {
- 
+
 
             //var list = new List<stu>()
             //{
@@ -44,8 +44,6 @@ namespace HJJJJ.DeskReach.Demo
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainFrom());
-
-
         }
     }
     [Serializable]

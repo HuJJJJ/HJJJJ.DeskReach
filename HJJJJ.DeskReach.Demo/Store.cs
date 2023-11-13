@@ -2,6 +2,7 @@
 using HJJJJ.DeskReach.Plugins.Pointer;
 using HJJJJ.DeskReach.Plugins.Screen;
 using HJJJJ.DeskReach.Plugins.TextMessage.Windows;
+using HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,21 +25,25 @@ namespace HJJJJ.DeskReach.Demo
         public static TextMessagePlugin textMessage;
         public static KeyboardPlugin keyboard;
 
+        public static DrawingBoardPlugin drawingBoard;
+
         /// <summary>
         /// 构建插件
         /// </summary>
-        public static void BuidingPlugin(IPointerViewContext pointerView, IScreenViewContext screenView, ITextMessageViewContext textMessageView, IKeyboardViewContext keyboardView)
+        public static void BuidingPlugin(IPointerViewContext pointerView, IScreenViewContext screenView, ITextMessageViewContext textMessageView, IKeyboardViewContext keyboardView, IDrawingBoardViewContext drawingBoardViewContext)
         {
             //构建插件并注册
             pointer = new PointerPlugin(pointerView);
             screen = new ScreenPlugin(screenView);
             textMessage = new TextMessagePlugin(textMessageView);
             keyboard = new KeyboardPlugin(keyboardView);
+            drawingBoard = new DrawingBoardPlugin(drawingBoardViewContext);
             client = new Client();
             client.RegPlugin(pointer);
             client.RegPlugin(screen);
             client.RegPlugin(textMessage);
             client.RegPlugin(keyboard);
+            client.RegPlugin(drawingBoard);
         }
 
         /// <summary>

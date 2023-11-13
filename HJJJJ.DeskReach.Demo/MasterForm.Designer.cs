@@ -48,25 +48,25 @@
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1124, 32);
+            this.menuStrip1.Size = new System.Drawing.Size(1124, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // statusStrip1
             // 
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.statusStrip1.Location = new System.Drawing.Point(0, 615);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 609);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1124, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1124, 28);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
             // groupBox1
             // 
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.groupBox1.Location = new System.Drawing.Point(0, 32);
+            this.groupBox1.Location = new System.Drawing.Point(0, 24);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(200, 558);
+            this.groupBox1.Size = new System.Drawing.Size(200, 560);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "groupBox1";
@@ -75,9 +75,9 @@
             // groupBox2
             // 
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Right;
-            this.groupBox2.Location = new System.Drawing.Point(924, 32);
+            this.groupBox2.Location = new System.Drawing.Point(924, 24);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(200, 558);
+            this.groupBox2.Size = new System.Drawing.Size(200, 560);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "groupBox2";
@@ -87,10 +87,10 @@
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.Location = new System.Drawing.Point(200, 32);
+            this.tabControl1.Location = new System.Drawing.Point(200, 24);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(724, 558);
+            this.tabControl1.Size = new System.Drawing.Size(724, 560);
             this.tabControl1.TabIndex = 4;
             // 
             // tabPage1
@@ -98,7 +98,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 28);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(716, 526);
+            this.tabPage1.Size = new System.Drawing.Size(716, 528);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -108,7 +108,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 28);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(716, 528);
+            this.tabPage2.Size = new System.Drawing.Size(716, 534);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -117,7 +117,7 @@
             // 
             this.toolStrip1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.toolStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.toolStrip1.Location = new System.Drawing.Point(0, 590);
+            this.toolStrip1.Location = new System.Drawing.Point(0, 584);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1124, 25);
             this.toolStrip1.TabIndex = 6;

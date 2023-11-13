@@ -9,17 +9,17 @@ namespace HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows.Entities
 {
 
     [Serializable]
-    internal class LineSegment
+    public class LineSegment
     {
         public LineSegment()
         {
-            Track = new List<Point>();
+            Tracks = new List<Point>();
         }
 
         /// <summary>
         /// 线段的运动轨迹
         /// </summary>
-        public List<Point> Track { get; set; }
+        public List<Point> Tracks { get; set; }
 
         /// <summary>
         /// 线段的颜色

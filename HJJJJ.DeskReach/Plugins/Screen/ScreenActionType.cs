@@ -28,6 +28,6 @@ namespace HJJJJ.DeskReach.Plugins.Screen
         /// <summary>
         /// 图片确认帧
         /// </summary>
-        ImageACKFrame,
+        ACK,
     }
 }

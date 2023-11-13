@@ -36,12 +36,13 @@
             this.BrushColor_Btn = new System.Windows.Forms.ToolStripButton();
             this.BrushSizeComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.ClearDrawingBoard = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+            this.closeDrawingBoard = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.comboBox1 = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripLabel();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripLabel();
             this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
+            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.panel1.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.SuspendLayout();
@@ -72,7 +73,7 @@
             this.BrushColor_Btn,
             this.BrushSizeComboBox,
             this.ClearDrawingBoard,
-            this.toolStripButton2,
+            this.closeDrawingBoard,
             this.toolStripSeparator1,
             this.comboBox1,
             this.toolStripButton3,
@@ -92,6 +93,7 @@
             this.BrushStatus_Btn.Name = "BrushStatus_Btn";
             this.BrushStatus_Btn.Size = new System.Drawing.Size(50, 38);
             this.BrushStatus_Btn.Text = "画笔";
+            this.BrushStatus_Btn.Click += new System.EventHandler(this.BrushStatus_Btn_Click);
             // 
             // BrushColor_Btn
             // 
@@ -101,12 +103,14 @@
             this.BrushColor_Btn.Name = "BrushColor_Btn";
             this.BrushColor_Btn.Size = new System.Drawing.Size(86, 38);
             this.BrushColor_Btn.Text = "画笔颜色";
+            this.BrushColor_Btn.Click += new System.EventHandler(this.BrushColor_Btn_Click);
             // 
             // BrushSizeComboBox
             // 
             this.BrushSizeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.BrushSizeComboBox.Name = "BrushSizeComboBox";
             this.BrushSizeComboBox.Size = new System.Drawing.Size(100, 43);
+            this.BrushSizeComboBox.SelectedIndexChanged += new System.EventHandler(this.BrushSizeComboBox_SelectedIndexChanged);
             // 
             // ClearDrawingBoard
             // 
@@ -116,15 +120,17 @@
             this.ClearDrawingBoard.Name = "ClearDrawingBoard";
             this.ClearDrawingBoard.Size = new System.Drawing.Size(86, 38);
             this.ClearDrawingBoard.Text = "清空画板";
+            this.ClearDrawingBoard.Click += new System.EventHandler(this.ClearDrawingBoard_Click);
             // 
-            // toolStripButton2
+            // closeDrawingBoard
             // 
-            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
-            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(86, 38);
-            this.toolStripButton2.Text = "关闭画板";
+            this.closeDrawingBoard.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.closeDrawingBoard.Image = ((System.Drawing.Image)(resources.GetObject("closeDrawingBoard.Image")));
+            this.closeDrawingBoard.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.closeDrawingBoard.Name = "closeDrawingBoard";
+            this.closeDrawingBoard.Size = new System.Drawing.Size(86, 38);
+            this.closeDrawingBoard.Text = "关闭画板";
+            this.closeDrawingBoard.Click += new System.EventHandler(this.CloseDrawingBoard_Click);
             // 
             // toolStripSeparator1
             // 
@@ -164,12 +170,12 @@
             // 
             // toolStripButton5
             // 
-            this.toolStripButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripButton5.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton5.Image")));
             this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton5.Name = "toolStripButton5";
-            this.toolStripButton5.Size = new System.Drawing.Size(34, 38);
-            this.toolStripButton5.Text = "toolStripButton5";
+            this.toolStripButton5.Size = new System.Drawing.Size(86, 38);
+            this.toolStripButton5.Text = "发送字幕";
             this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
             // 
             // RemoteControlFrom
@@ -199,12 +205,13 @@
         private System.Windows.Forms.ToolStripButton BrushColor_Btn;
         private System.Windows.Forms.ToolStripComboBox BrushSizeComboBox;
         private System.Windows.Forms.ToolStripButton ClearDrawingBoard;
-        private System.Windows.Forms.ToolStripButton toolStripButton2;
+        private System.Windows.Forms.ToolStripButton closeDrawingBoard;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripComboBox comboBox1;
         private System.Windows.Forms.ToolStripLabel toolStripButton3;
         private System.Windows.Forms.ToolStripLabel toolStripButton4;
         private System.Windows.Forms.ToolStripButton toolStripButton5;
+        private System.Windows.Forms.ColorDialog colorDialog1;
     }
 }
 
