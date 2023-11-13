@@ -11,32 +11,32 @@ namespace HJJJJ.DeskReach.Plugins
 {
     public class BasePlugin
     {
-        IClient client;
+       public Client client;
 
 
-        public virtual MenuItem[] GetMenuItems(MenuPosition pos)
+        public virtual List<MenuItem> GetMenuItems(MenuPosition pos)
         {
-            switch (pos)
-            {
-                case MenuPosition.TopMenu:
-                    {
-                        return new MenuItem[]
-                        {
-                            new ButtonMenuItem() {Name = "高清" },
-                            new ButtonMenuItem() {Name = "标清" },
-                            new ButtonMenuItem() {Name = "流畅" },
-                        };
-                    }
-                case MenuPosition.Screen:
-                    break;
-                case MenuPosition.ToolBar:
-                    break;
-            }
+            //switch (pos)
+            //{
+            //    case MenuPosition.TopMenu:
+            //        {
+            //            return new MenuItem[]
+            //            {
+            //                new ButtonMenuItem() {Name = "高清" },
+            //                new ButtonMenuItem() {Name = "标清" },
+            //                new ButtonMenuItem() {Name = "流畅" },
+            //            };
+            //        }
+            //    case MenuPosition.Screen:
+            //        break;
+            //    case MenuPosition.ToolBar:
+            //        break;
+            //}
             return null;
         }
 
 
-        internal virtual void RegInit(IClient client)
+        internal virtual void RegInit(Client client)
         {
             this.client = client;
         }

@@ -11,7 +11,6 @@ namespace HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows
     public interface IDrawingBoardViewContext
     {
 
-
         /// <summary>
         /// 初始化画板
         /// </summary>

@@ -1,8 +1,10 @@
 ﻿using HJJJJ.DeskReach.Plugins;
+using HJJJJ.DeskReach.Plugins.PluginMenu;
 using HJJJJ.DeskReach.Plugins.Screen;
 using HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows.Entities;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -23,6 +25,78 @@ namespace HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows
             viewContext.InitDrawingBoard();
         }
 
+        private int LineSegmentWidth;
+        private Color LineSegmentColor;
+
+        public override List<MenuItem> GetMenuItems(MenuPosition pos)
+        {
+            var menu = new List<MenuItem>();
+            switch (pos)
+            {
+                case MenuPosition.TopMenu:
+                    break;
+                case MenuPosition.Screen:
+                    break;
+                case MenuPosition.ToolBar:
+                    break;
+                case MenuPosition.ToolMenu:
+                    menu.AddRange(new MenuItem[]
+                    {
+                        new ButtonMenuItem
+                        {
+                        Name="画笔",
+                        OnClick =OpenBoard
+                        },
+                        new ButtonMenuItem
+                        {
+                        Name ="画笔颜色",
+                        
+                        },
+                        new ComboBoxMenuItem
+                        {
+                        Name ="画笔大小",
+                        Items = new object[]{"小","中","大" }
+                        },
+                            new ButtonMenuItem
+                        {
+                        Name="清空画板",
+                        OnClick = OpenBoard
+                        },
+                        new ButtonMenuItem
+                        {
+                        Name = "关闭画板",
+                        OnClick = CloseBoard
+                        },
+                    
+                    }
+
+                    );
+                    break;
+                case MenuPosition.StatusMenu:
+                    break;
+            }
+            return menu;
+        }
+
+        /// <summary>
+        /// 打开画板
+        /// </summary>
+        private void OpenBoard()
+        {
+            //修改当前为画画模式
+            client.IsDrawing = true;
+            Action(new DrawingBoardPacket(DrawingBoardActionType.OpenDrawingBoard));
+        }
+
+        /// <summary>
+        /// 关闭画板
+        /// </summary>
+        private void CloseBoard()
+        {
+            //修改当前为画画模式
+            client.IsDrawing = true;
+            Action(new DrawingBoardPacket(DrawingBoardActionType.CloseDrawingBoard));
+        }
 
         /// <summary>
         /// 接收消息处理事件

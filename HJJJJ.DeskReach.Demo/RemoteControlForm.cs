@@ -1,4 +1,5 @@
 ﻿using HJJJJ.DeskReach.Plugins.Keyboard;
+using HJJJJ.DeskReach.Plugins.PluginMenu;
 using HJJJJ.DeskReach.Plugins.Pointer;
 using HJJJJ.DeskReach.Plugins.Screen;
 using HJJJJ.DeskReach.Plugins.TextMessage.Windows;
@@ -24,24 +25,43 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 namespace HJJJJ.DeskReach.Demo
 {
-    public partial class RemoteControlFrom : Form, IPointerViewContext, IScreenViewContext, ITextMessageViewContext, IKeyboardViewContext
+    public partial class RemoteControlForm : Form, IPointerViewContext, IScreenViewContext, ITextMessageViewContext, IKeyboardViewContext
     {
-
         private int frameCount = 0;
         private DateTime lastFrameTime;
         private System.Windows.Forms.Label fpsLabel;
         private PictureBox pictureBox;
-
+        private Client client;
+        private PointerPlugin pointer;
+        private ScreenPlugin screen;
+        private TextMessagePlugin textMessage;
+        private KeyboardPlugin keyboard;
+        private DrawingBoardPlugin drawingBoard;
 
         public Rectangle Area { get; set; }
 
-        public RemoteControlFrom()
+        public RemoteControlForm(Client _client)
         {
             InitializeComponent();
             CheckForIllegalCrossThreadCalls = false;
+            //初始化客户端和插件
+            this.client = _client;
+            pointer = new PointerPlugin(this);
+            screen = new ScreenPlugin(this);
+            textMessage = new TextMessagePlugin(this);
+            keyboard = new KeyboardPlugin(this);
+            drawingBoard = new DrawingBoardPlugin(new DrawForm());
+            client.RegPlugin(pointer);
+            client.RegPlugin(screen);
+            client.RegPlugin(textMessage);
+            client.RegPlugin(keyboard);
+            client.RegPlugin(drawingBoard);
+
             Area = Screen.GetBounds(this);
             //监听键盘
             this.KeyPress += MainForm_KeyPress;
+
+            //初始化界面
             InitView();
         }
 
@@ -76,16 +96,42 @@ namespace HJJJJ.DeskReach.Demo
             pictureBox.Dock = DockStyle.Fill;
 
             ///界面的鼠标控制事件
-            pictureBox.MouseClick += (object sender, MouseEventArgs e) => { if (!IsDrawing) Store.pointer.Action(new PointerPacket(new Point() { X = e.X * 100 / pictureBox.Width, Y = e.Y * 100 / pictureBox.Height }, PointerActionType.Left)); };
-            pictureBox.MouseDoubleClick += (object sender, MouseEventArgs e) => { if (!IsDrawing) Store.pointer.Action(new PointerPacket(new Point() { X = e.X * 100 / pictureBox.Width, Y = e.Y * 100 / pictureBox.Height }, PointerActionType.DoubleLeft)); };
-            pictureBox.MouseWheel += (object sender, MouseEventArgs e) => { if (!IsDrawing) Store.pointer.Action(new PointerPacket(new Point() { X = e.X * 100 / pictureBox.Width, Y = e.Y * 100 / pictureBox.Height }, PointerActionType.MouseWheel, e.Delta)); };
+            pictureBox.MouseClick += (object sender, MouseEventArgs e) => { if (!IsDrawing) pointer.Action(new PointerPacket(new Point() { X = e.X * 100 / pictureBox.Width, Y = e.Y * 100 / pictureBox.Height }, PointerActionType.Left)); };
+            pictureBox.MouseDoubleClick += (object sender, MouseEventArgs e) => { if (!IsDrawing) pointer.Action(new PointerPacket(new Point() { X = e.X * 100 / pictureBox.Width, Y = e.Y * 100 / pictureBox.Height }, PointerActionType.DoubleLeft)); };
+            pictureBox.MouseWheel += (object sender, MouseEventArgs e) => { if (!IsDrawing) pointer.Action(new PointerPacket(new Point() { X = e.X * 100 / pictureBox.Width, Y = e.Y * 100 / pictureBox.Height }, PointerActionType.MouseWheel, e.Delta)); };
             panel2.Controls.Add(pictureBox);
 
             //picbox加入画板功能
             pictureBox.MouseDown += new MouseEventHandler(TransparentPanel_MouseDown);
             pictureBox.MouseUp += new MouseEventHandler(TransparentPanel_MouseUp);
             pictureBox.MouseMove += new MouseEventHandler(OnMouseMove);
+
+
+            //修改视频质量
+            var toolMenu = screen.GetMenuItems(MenuPosition.ToolMenu).First();
+            if (toolMenu is ComboBoxMenuItem) 
+            {
+                //修改视频质量combobox
+                var comboBoxItem = toolMenu as ComboBoxMenuItem;
+                var comboBox = new ToolStripComboBox();
+                comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+                comboBox.Items.AddRange(comboBoxItem.Items);
+                comboBox.SelectedIndex = 2;
+                comboBox.SelectedIndexChanged += (object sender, EventArgs e)=> 
+                {
+                    ToolStripComboBox item = (ToolStripComboBox)sender;
+                    comboBoxItem.OnIndexChanged?.Invoke(item.SelectedItem.ToString());
+                }; ;
+
+                ToolStripLabel label = new ToolStripLabel();
+                label.Text = "商品质量";
+                this.toolStrip.Items.Add(label);
+                this.toolStrip.Items.Add(comboBox);
+            }
         }
+
+
+
 
 
         /// <summary>
@@ -139,12 +185,12 @@ namespace HJJJJ.DeskReach.Demo
         /// <param name="e"></param>
         private void MainForm_KeyPress(object sender, KeyPressEventArgs e)
         {
-            Store.keyboard.Action(new KeyboardPacket(KeyboardActionType.Single, e.KeyChar.ToString()));
+            keyboard.Action(new KeyboardPacket(KeyboardActionType.Single, e.KeyChar.ToString()));
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (Store.screen == null) return;
+            if (screen == null) return;
             int quality = 0;
             switch ((imageQuality)comboBox1.SelectedIndex)
             {
@@ -164,14 +210,14 @@ namespace HJJJJ.DeskReach.Demo
                     quality = 100;
                     break;
             }
-            Store.screen.Action(new ScreenPacket(ScreenActionType.ImageQuality, null, quality));
+            screen.Action(new ScreenPacket(ScreenActionType.ImageQuality, null, quality));
         }
 
         private void RemoteControlFrom_Load(object sender, EventArgs e)
         {
-            Store.screen.StartReceive();         //启动图像接受
+            screen.StartReceive();         //启动图像接受
             //请求传输图像
-            Store.screen.Action(new ScreenPacket(ScreenActionType.RequestImage));
+            screen.Action(new ScreenPacket(ScreenActionType.RequestImage));
 
             // 创建定时器
             timer = new System.Windows.Forms.Timer();
@@ -185,7 +231,7 @@ namespace HJJJJ.DeskReach.Demo
         private void toolStripButton5_Click(object sender, EventArgs e)
         {
 
-            Store.textMessage.Action(new TextMessagePacket("我是奥特曼", TextMessageActionType.SendMessage));
+            textMessage.Action(new TextMessagePacket("我是奥特曼", TextMessageActionType.SendMessage));
         }
 
         public void ShowMessage(string message)
@@ -238,13 +284,13 @@ namespace HJJJJ.DeskReach.Demo
         private void BrushStatus_Btn_Click(object sender, EventArgs e)
         {
             IsDrawing = true;
-            Store.drawingBoard.Action(new DrawingBoardPacket(DrawingBoardActionType.OpenDrawingBoard));
+            drawingBoard.Action(new DrawingBoardPacket(DrawingBoardActionType.OpenDrawingBoard));
         }
 
         private void ClearDrawingBoard_Click(object sender, EventArgs e)
         {
             mouseTrack.Clear();
-            Store.drawingBoard.Drawing(mouseTrack);
+            drawingBoard.Drawing(mouseTrack);
         }
 
         private void BrushColor_Btn_Click(object sender, EventArgs e)
@@ -256,8 +302,8 @@ namespace HJJJJ.DeskReach.Demo
         private void CloseDrawingBoard_Click(object sender, EventArgs e)
         {
             IsDrawing = false;
-            Store.drawingBoard.Action(new DrawingBoardPacket(DrawingBoardActionType.CloseDrawingBoard));
-            ClearDrawingBoard_Click(null,null);
+            drawingBoard.Action(new DrawingBoardPacket(DrawingBoardActionType.CloseDrawingBoard));
+            ClearDrawingBoard_Click(null, null);
         }
 
         private void BrushSizeComboBox_SelectedIndexChanged(object sender, EventArgs e)

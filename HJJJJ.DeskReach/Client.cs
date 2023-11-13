@@ -41,6 +41,22 @@ namespace HJJJJ.DeskReach
         /// </summary>
         private object ConnectLock = new object();
 
+        /// <summary>
+        /// 客户端连接成功
+        /// </summary>
+        public Action Client_OnConnectedSuccessfullyCallback;
+
+        /// <summary>
+        /// 服务端连接成功
+        /// </summary>
+        public Action Server_OnConnectedSuccessfullyCallback;
+
+        /// <summary>
+        /// 当前是否是画画模式
+        /// </summary>
+        public bool IsDrawing;
+
+
         public Client()
         {
             client = new TcpClient();
@@ -69,6 +85,7 @@ namespace HJJJJ.DeskReach
                     Role = ClientRoleType.ControlEnd;
                 }
             }
+            Client_OnConnectedSuccessfullyCallback?.Invoke();
         }
 
         /// <summary>
@@ -84,6 +101,7 @@ namespace HJJJJ.DeskReach
                 e.Client.OnDataReceived += (object s, STTech.BytesIO.Core.DataReceivedEventArgs g) => unpacker.Input(g.Data);
                 Role = ClientRoleType.ControlledEnd;
             }
+            Server_OnConnectedSuccessfullyCallback?.Invoke();
         }
 
         /// <summary>

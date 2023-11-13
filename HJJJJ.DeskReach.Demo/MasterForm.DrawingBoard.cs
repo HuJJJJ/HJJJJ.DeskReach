@@ -1,5 +1,4 @@
-﻿using HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows;
-using HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows.Entities;
+﻿using HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows.Entities;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -10,7 +9,7 @@ using System.Windows.Forms;
 
 namespace HJJJJ.DeskReach.Demo
 {
-    public partial class RemoteControlFrom
+    public partial class MasterForm
     {
         /// <summary>
         /// 是否需要重绘
@@ -75,7 +74,7 @@ namespace HJJJJ.DeskReach.Demo
         {
             Area = Screen.GetBounds(this);
             base.OnMouseMove(e);
-            if (IsDrawing && Control.MouseButtons == MouseButtons.Left)
+            if (client.IsDrawing && Control.MouseButtons == MouseButtons.Left)
             {
                 Point currentPoint = new Point()
                 {
@@ -97,7 +96,7 @@ namespace HJJJJ.DeskReach.Demo
                 {
                     mouseTrack[i].Tracks = mouseTrack[i].Tracks.GroupBy(item => (item.X, item.Y)).Select(item => item.First()).ToList();
                 }
-                Store.drawingBoard.Drawing(mouseTrack);
+                drawingBoard.Drawing(mouseTrack);
             }
             //lock (clearClock)
             //{

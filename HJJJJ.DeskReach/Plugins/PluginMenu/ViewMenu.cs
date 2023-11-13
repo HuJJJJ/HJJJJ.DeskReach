@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
 
 namespace HJJJJ.DeskReach.Plugins.PluginMenu
@@ -10,6 +11,8 @@ namespace HJJJJ.DeskReach.Plugins.PluginMenu
         TopMenu = 1,
         Screen = 2,
         ToolBar = 4,
+        ToolMenu = 5,
+        StatusMenu = 6
     }
 
     public class MenuItem
@@ -17,6 +20,8 @@ namespace HJJJJ.DeskReach.Plugins.PluginMenu
         public string Name { get; set; }
 
         public bool Enable { get; set; } = true;
+
+        public Color FontColor { get; set; }
     }
 
     public class DropMenuItem : MenuItem
@@ -35,22 +40,17 @@ namespace HJJJJ.DeskReach.Plugins.PluginMenu
         public Action<string> OnInput { get; set; }
     }
 
-
-
-
-
-
-
-    public class ViewMenu
+    public class ComboBoxMenuItem : MenuItem
     {
-        public List<MenuItem> MenuItems { get; set; }
-        public string PluginName { get; set; }
-
-        public ViewMenu()
-        {
-            MenuItems = new List<MenuItem>();
-        }
+        public object[] Items { get; set; }
+        public Action<string> OnIndexChanged { get; set; }
     }
+
+    public class LabelMenuItem : MenuItem 
+    {
+    
+    }
+
 
     //public class MenuItem
     //{

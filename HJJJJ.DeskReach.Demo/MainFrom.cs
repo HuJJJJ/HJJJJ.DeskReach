@@ -15,13 +15,18 @@ namespace HJJJJ.DeskReach.Demo
 {
     public partial class MainFrom : Form
     {
-        RemoteControlFrom remoteControlFrom;
+
+        private static string TargetIP { get; set; }
+        private static int TargetPort { get; set; }
+
+        private Client client = new Client();
         public MainFrom()
         {
             InitializeComponent();
             //初始化组件并启动接收程序
-            remoteControlFrom = new RemoteControlFrom();
-            Store.BuidingPlugin(remoteControlFrom, remoteControlFrom, remoteControlFrom, remoteControlFrom,new DrawForm());
+          //  client.Client_OnConnectedSuccessfullyCallback = new Action(() =>);
+            client.Server_OnConnectedSuccessfullyCallback = new Action(() =>new SlaveForm(client).ShowDialog());
+            //   Store.BuidingPlugin(remoteControlFrom, remoteControlFrom, remoteControlFrom, remoteControlFrom,new DrawForm());
             textBox2.Text = "127.0.0.1:455";
         }
 
@@ -31,8 +36,8 @@ namespace HJJJJ.DeskReach.Demo
             {
                 //获取ip地址
                 var strs = textBox1.Text.Split(':');
-                Store.TargetIP = strs[0];
-                Store.TargetPort = Convert.ToInt32(strs[1]);
+                TargetIP = strs[0];
+                TargetPort = Convert.ToInt32(strs[1]);
             }
             catch (Exception ex)
             {
@@ -44,12 +49,13 @@ namespace HJJJJ.DeskReach.Demo
             //根据选择功能打开不同的窗体
             if (RemoteControlRadio.Checked)
             {
-                Store.ClientConnect();
-                remoteControlFrom.ShowDialog();
+                client.Connct(TargetIP, TargetPort);
+                MasterForm masterForm =new MasterForm(client);
+                masterForm.ShowDialog();
             }
             else if (FileTransferRadio.Checked)
             {
-                new FileTransferFrom().ShowDialog();
+                new FileTransferForm().ShowDialog();
             }
         }
 
@@ -61,7 +67,7 @@ namespace HJJJJ.DeskReach.Demo
         private void button4_Click(object sender, EventArgs e)
         {
             var strs = textBox2.Text.Split(':');
-            Store.ServerConnect(strs[0], Convert.ToInt32(strs[1]));
+            client.StartServer(strs[0], Convert.ToInt32(strs[1]));
         }
 
         private void MainFrom_FormClosing(object sender, FormClosingEventArgs e)

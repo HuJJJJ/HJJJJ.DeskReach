@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Timers;
 using HJJJJ.DeskReach.Plugins.PluginMenu;
+using System.Drawing;
 
 namespace HJJJJ.DeskReach.Plugins.Screen
 {
@@ -34,7 +35,7 @@ namespace HJJJJ.DeskReach.Plugins.Screen
         }
 
 
-        internal override void RegInit(IClient client)
+        internal override void RegInit(Client client)
         {
             base.RegInit(client);
 
@@ -154,6 +155,61 @@ namespace HJJJJ.DeskReach.Plugins.Screen
                 frameCount = 0;
                 lastFrameTime = DateTime.Now;
             }
+        }
+
+        public override List<MenuItem> GetMenuItems(MenuPosition pos)
+        {
+            var menu = new List<MenuItem>();
+            switch (pos)
+            {
+                case MenuPosition.TopMenu:
+                    break;
+                case MenuPosition.Screen:
+                    break;
+                case MenuPosition.ToolBar:
+                    break;
+                case MenuPosition.ToolMenu:
+                    menu.AddRange(new MenuItem[] {new ComboBoxMenuItem()
+                    {
+                        Name = "视频质量",
+                        Enable = true,
+                        Items = new object[] { "Speed", "Low", "Nomal", "High", "Quality" },
+                        OnIndexChanged = new Action<string>((e) =>
+                        {
+                            int quality = 0;
+                            switch (e)
+                            {
+                                case "Speed":
+                                    quality = 0;
+                                    break;
+                                case "Low":
+                                    quality = 20;
+                                    break;
+                                case "Nomal":
+                                    quality = 50;
+                                    break;
+                                case "High":
+                                    quality = 80;
+                                    break;
+                                case "Quality":
+                                    quality = 100;
+                                    break;
+                            }
+                            Action(new ScreenPacket(ScreenActionType.ImageQuality, null, quality));
+                        })
+                    },
+                    new LabelMenuItem
+                    {
+                    Name ="视频质量",
+                    Enable =false,
+                    FontColor = Color.Gray
+                    } }
+                    );
+                    break;
+                case MenuPosition.StatusMenu:
+                    break;
+            }
+            return menu;
         }
 
         private void SendAck() => Action(new ScreenPacket(ScreenActionType.ACK));

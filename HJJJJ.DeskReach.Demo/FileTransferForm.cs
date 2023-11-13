@@ -14,12 +14,12 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
 
 namespace HJJJJ.DeskReach.Demo
 {
-    public partial class FileTransferFrom : Form
+    public partial class FileTransferForm : Form
     {
 
         ListViewColumnSorter lvwColumnSorter = null;
 
-        public FileTransferFrom()
+        public FileTransferForm()
         {
             InitializeComponent();
             lvwColumnSorter = new ListViewColumnSorter();

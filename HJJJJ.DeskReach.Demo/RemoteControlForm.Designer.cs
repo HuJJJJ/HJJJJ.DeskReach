@@ -1,6 +1,6 @@
 ﻿namespace HJJJJ.DeskReach.Demo
 {
-    partial class RemoteControlFrom
+    partial class RemoteControlForm
     {
         /// <summary>
         /// 必需的设计器变量。
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RemoteControlFrom));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RemoteControlForm));
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
@@ -40,7 +40,6 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.comboBox1 = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripLabel();
-            this.toolStripButton4 = new System.Windows.Forms.ToolStripLabel();
             this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.panel1.SuspendLayout();
@@ -49,10 +48,10 @@
             // 
             // panel2
             // 
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(956, 644);
+            this.panel2.Size = new System.Drawing.Size(956, 595);
             this.panel2.TabIndex = 7;
             // 
             // panel1
@@ -77,7 +76,6 @@
             this.toolStripSeparator1,
             this.comboBox1,
             this.toolStripButton3,
-            this.toolStripButton4,
             this.toolStripButton5});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
@@ -157,17 +155,6 @@
             this.toolStripButton3.Size = new System.Drawing.Size(0, 38);
             this.toolStripButton3.Text = "toolStripButton3";
             // 
-            // toolStripButton4
-            // 
-            this.toolStripButton4.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton4.Enabled = false;
-            this.toolStripButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton4.Image")));
-            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton4.Name = "toolStripButton4";
-            this.toolStripButton4.Size = new System.Drawing.Size(82, 38);
-            this.toolStripButton4.Text = "视频质量";
-            // 
             // toolStripButton5
             // 
             this.toolStripButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -178,7 +165,7 @@
             this.toolStripButton5.Text = "发送字幕";
             this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
             // 
-            // RemoteControlFrom
+            // RemoteControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -186,7 +173,7 @@
             this.ClientSize = new System.Drawing.Size(956, 644);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.panel2);
-            this.Name = "RemoteControlFrom";
+            this.Name = "RemoteControlForm";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.RemoteControlFrom_Load);
             this.panel1.ResumeLayout(false);
@@ -209,7 +196,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripComboBox comboBox1;
         private System.Windows.Forms.ToolStripLabel toolStripButton3;
-        private System.Windows.Forms.ToolStripLabel toolStripButton4;
         private System.Windows.Forms.ToolStripButton toolStripButton5;
         private System.Windows.Forms.ColorDialog colorDialog1;
     }
