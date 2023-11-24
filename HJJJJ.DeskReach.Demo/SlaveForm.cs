@@ -1,4 +1,5 @@
-﻿using HJJJJ.DeskReach.Plugins.Keyboard;
+﻿using HJJJJ.DeskReach.Plugins.CommandPrompt.Windows;
+using HJJJJ.DeskReach.Plugins.Keyboard;
 using HJJJJ.DeskReach.Plugins.Pointer;
 using HJJJJ.DeskReach.Plugins.Screen;
 using HJJJJ.DeskReach.Plugins.TextMessage.Windows;
@@ -23,11 +24,13 @@ namespace HJJJJ.DeskReach.Demo
         private TextMessagePlugin textMessage;
         private KeyboardPlugin keyboard;
         private DrawingBoardPlugin drawingBoard;
+        private CommandPromptPlugin cmd;
         public SlaveForm(Client _client)
         {
             InitializeComponent();
             this.client = _client;
             var form = new MasterForm(client);
+            cmd = new CommandPromptPlugin(new CMDForm(client));
             pointer = new PointerPlugin(form);
             screen = new ScreenPlugin(form);
             textMessage = new TextMessagePlugin(form);
@@ -38,6 +41,12 @@ namespace HJJJJ.DeskReach.Demo
             client.RegPlugin(textMessage);
             client.RegPlugin(keyboard);
             client.RegPlugin(drawingBoard);
+            client.RegPlugin(cmd);
+        }
+
+        public void ShowCmdOutput(string data)
+        {
+
         }
     }
 }

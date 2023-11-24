@@ -36,6 +36,8 @@ namespace HJJJJ.DeskReach
         /// </summary>
         private ClientRoleType Role;
 
+        public ClientRoleType GetRole() { return Role; }
+
         /// <summary>
         /// 连接锁
         /// </summary>
@@ -115,6 +117,20 @@ namespace HJJJJ.DeskReach
             client.Connect(timeout);
         }
 
+        public void CloseClient() 
+        {
+            client.Disconnect();
+        }
+        public void CloseServer() 
+        {
+            server.CloseAsync();
+        }
+
+        /// <summary>
+        /// 启动受控端
+        /// </summary>
+        /// <param name="ip"></param>
+        /// <param name="port"></param>
         public void StartServer(string ip, int port = 45555)
         {
             server.Host = ip;
@@ -122,6 +138,10 @@ namespace HJJJJ.DeskReach
             server.StartAsync();
         }
 
+        /// <summary>
+        /// 注册组件
+        /// </summary>
+        /// <param name="p"></param>
         public void RegPlugin(BasePlugin p)
         {
             if (!Plugins.Any(item => item.GetType() == p.GetType()))
@@ -144,6 +164,7 @@ namespace HJJJJ.DeskReach
             Plugins
                 .ForEach(x =>
                 {
+                    
                     if (x.GetType().ToString() == response.PluginName)
                     {
                         x.RaiseDataReceived(this, response.DetailData);
@@ -161,7 +182,7 @@ namespace HJJJJ.DeskReach
                     client.SendAsync(bytes);
                     break;
                 case ClientRoleType.ControlledEnd:
-                    server.Clients.First().Send(bytes);
+                    server.Clients.First().SendAsync(bytes);
                     break;
             }
           

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace HJJJJ.DeskReach.Entities
 {
-    internal enum ClientRoleType
+    public enum ClientRoleType
     {
         /// <summary>
         /// 未连接

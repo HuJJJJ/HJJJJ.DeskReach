@@ -101,16 +101,12 @@ public class WindowsAPIScreenCapture
         using (MemoryStream ms = new MemoryStream())
         {
             image.Save(ms, jpegEncoder, encoderParameters);
-            var a = ms.ToArray();
+            var bytes = ms.ToArray();
             image.Dispose();
-            return a;
+            return bytes;
         }
 
     }
-
-
-
-
 
     private static ImageCodecInfo GetEncoder(ImageFormat format)
     {

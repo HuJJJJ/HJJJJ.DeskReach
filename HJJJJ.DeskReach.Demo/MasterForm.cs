@@ -1,6 +1,8 @@
-﻿using HJJJJ.DeskReach.Plugins.Keyboard;
+﻿using HJJJJ.DeskReach.Plugins.CommandPrompt.Windows;
+using HJJJJ.DeskReach.Plugins.Keyboard;
 using HJJJJ.DeskReach.Plugins.PluginMenu;
 using HJJJJ.DeskReach.Plugins.Pointer;
+//using HJJJJ.DeskReach.Plugins.Screen;
 using HJJJJ.DeskReach.Plugins.Screen;
 using HJJJJ.DeskReach.Plugins.TextMessage.Windows;
 using HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows;
@@ -20,6 +22,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
@@ -38,7 +41,7 @@ namespace HJJJJ.DeskReach.Demo
         private TextMessagePlugin textMessage;
         private KeyboardPlugin keyboard;
         private DrawingBoardPlugin drawingBoard;
-
+        private CMDForm CMDForm;
         public Rectangle Area { get; set; }
 
         public MasterForm(Client _client)
@@ -58,6 +61,8 @@ namespace HJJJJ.DeskReach.Demo
             client.RegPlugin(keyboard);
             client.RegPlugin(drawingBoard);
 
+            //cmd窗口
+            CMDForm = new CMDForm(client);
             Area = Screen.GetBounds(this);
             //监听键盘
             this.KeyPress += MainForm_KeyPress;
@@ -100,8 +105,8 @@ namespace HJJJJ.DeskReach.Demo
                     var btn = (ButtonMenuItem)item;
                     var toolBtn = new ToolStripButton();
                     toolBtn.Text = btn.Name;
-                    toolBtn.Click += (object sender, EventArgs e) => btn.OnClick?.Invoke();
-                    if (btn.Name == "画笔颜色") 
+                    toolBtn.Click += (object sender, EventArgs e) => btn.OnClick?.Invoke(btn, e);
+                    if (btn.Name == "画笔颜色")
                     {
                         toolBtn.Click += (object sender, EventArgs e) =>
                         {
@@ -111,7 +116,7 @@ namespace HJJJJ.DeskReach.Demo
                     }
                     this.toolStrip.Items.Add(toolBtn);
                 }
-                else if (item is ComboBoxMenuItem) 
+                else if (item is ComboBoxMenuItem)
                 {
                     var comboBoxItem = item as ComboBoxMenuItem;
                     var comboBox = new ToolStripComboBox();
@@ -120,7 +125,7 @@ namespace HJJJJ.DeskReach.Demo
                     comboBox.SelectedIndexChanged += (object sender, EventArgs e) =>
                     {
                         ToolStripComboBox text = (ToolStripComboBox)sender;
-                        comboBoxItem.OnIndexChanged?.Invoke(text.SelectedItem.ToString());
+                        comboBoxItem.OnIndexChanged?.Invoke(comboBoxItem,new ComboBoxSelectedEvnetArgs { Text = text.SelectedItem.ToString()});
                     }; ;
                     ToolStripLabel label = new ToolStripLabel();
                     label.Text = comboBoxItem.Name;
@@ -140,7 +145,7 @@ namespace HJJJJ.DeskReach.Demo
                 comboBox.SelectedIndexChanged += (object sender, EventArgs e) =>
                 {
                     ToolStripComboBox item = (ToolStripComboBox)sender;
-                    comboBoxItem.OnIndexChanged?.Invoke(item.SelectedItem.ToString());
+                    comboBoxItem.OnIndexChanged?.Invoke(screenToolMenu, new ComboBoxSelectedEvnetArgs { Text = item.SelectedItem.ToString() });
                 }; ;
                 ToolStripLabel label = new ToolStripLabel();
                 label.Text = comboBoxItem.Name;
@@ -148,9 +153,6 @@ namespace HJJJJ.DeskReach.Demo
                 this.toolStrip.Items.Add(comboBox);
             }
         }
-
-
-
 
         /// <summary>
         /// 获取当前屏幕的截图
@@ -177,7 +179,7 @@ namespace HJJJJ.DeskReach.Demo
         /// <param name="image"></param>
         public void ShowImage(byte[] image)
         {
-            var tempFrame = image.BytesToBitmap();
+            var tempFrame = image.ToBitmap();
             int targetWidth = this.pictureBox.Width;
             int targetHeight = (int)((float)tempFrame.Height / tempFrame.Width * targetWidth);
 
@@ -300,7 +302,18 @@ namespace HJJJJ.DeskReach.Demo
             ClearDrawingBoard_Click(null, null);
         }
 
-      
+
+        private void sdsdsdToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CMDForm.Show();
+        }
+
+        private void screenPanel_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+
         //private void BrushSizeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         //{
         //    switch (this.BrushSizeComboBox.SelectedItem.ToString())
@@ -323,6 +336,46 @@ namespace HJJJJ.DeskReach.Demo
 
         //    }
         //}
+    }
+
+    public static class MenuItemExtensions
+    {
+        public static ToolStripItem ToToolStripItem(this Plugins.PluginMenu.MenuItem item)
+        {
+            switch (item.ItemType)
+            {
+                case MenuItemType.Button:
+                    {
+                        var buttonItem = item as ButtonMenuItem;
+                        return new ToolStripMenuItem()
+                        {
+                            Text = item.Name,
+                            Enabled = item.Enable
+                        }.With(tsmi => tsmi.Click += (s, e) => buttonItem?.OnClick(buttonItem, e));
+                    }
+
+                case MenuItemType.Input:
+                    break;
+
+                case MenuItemType.Drop:
+                    var drop = item as DropMenuItem;
+                    return new ToolStripMenuItem()
+                    {
+                        Text = item.Name,
+                        Enabled = item.Enable
+                    }.With(x => x.DropDownItems.AddRange(drop.DropItems.Select(i => i.ToToolStripItem()).ToArray()));
+
+                case MenuItemType.ComboBox:
+                    {
+                        var comboBoxItem = item as ComboBoxMenuItem;
+                        return new ToolStripComboBox() { Enabled = item.Enable }.With(cb =>
+                        {
+                            cb.Items.AddRange(comboBoxItem.Items);
+                        });
+                    }
+            }
+            return null;
+        }
     }
 
 }

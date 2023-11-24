@@ -11,6 +11,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HJJJJ.DeskReach.Demo", "HJJ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HJJJJ.DeskReach.Plugins.TextMessage.Windows", "HJJJJ.DeskReach.Plugins.TextMessage.Windows\HJJJJ.DeskReach.Plugins.TextMessage.Windows.csproj", "{BFFE2CCB-8496-446D-BF66-156B5FD5A33A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HJJJJ.DeskReach.Plugins.Screen.Windows", "HJJJJ.DeskReach.Plugins.Screen.Windows\HJJJJ.DeskReach.Plugins.Screen.Windows.csproj", "{FAC48B1D-A672-49EC-9B7F-AC2DE0A79C2F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFormsApp", "WindowsFormsApp\WindowsFormsApp.csproj", "{8F021694-C284-46B9-8CEB-3DCACC25142C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{A88640B3-67F1-4EFB-A3C6-6DD1E86BE86F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HJJJJ.DeskReach.Plugins.CommandPrompt.Windows", "HJJJJ.DeskReach.Plugins.CommandPrompt.Windows\HJJJJ.DeskReach.Plugins.CommandPrompt.Windows.csproj", "{B7E34F5D-C2B8-4099-898C-42FFEA28BEB3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +41,22 @@ Global
 		{BFFE2CCB-8496-446D-BF66-156B5FD5A33A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BFFE2CCB-8496-446D-BF66-156B5FD5A33A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BFFE2CCB-8496-446D-BF66-156B5FD5A33A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAC48B1D-A672-49EC-9B7F-AC2DE0A79C2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAC48B1D-A672-49EC-9B7F-AC2DE0A79C2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAC48B1D-A672-49EC-9B7F-AC2DE0A79C2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAC48B1D-A672-49EC-9B7F-AC2DE0A79C2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F021694-C284-46B9-8CEB-3DCACC25142C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F021694-C284-46B9-8CEB-3DCACC25142C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F021694-C284-46B9-8CEB-3DCACC25142C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F021694-C284-46B9-8CEB-3DCACC25142C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A88640B3-67F1-4EFB-A3C6-6DD1E86BE86F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A88640B3-67F1-4EFB-A3C6-6DD1E86BE86F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A88640B3-67F1-4EFB-A3C6-6DD1E86BE86F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A88640B3-67F1-4EFB-A3C6-6DD1E86BE86F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7E34F5D-C2B8-4099-898C-42FFEA28BEB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7E34F5D-C2B8-4099-898C-42FFEA28BEB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7E34F5D-C2B8-4099-898C-42FFEA28BEB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7E34F5D-C2B8-4099-898C-42FFEA28BEB3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

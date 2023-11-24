@@ -1,9 +1,7 @@
-﻿using HJJJJ.DeskReach.Plugins.Pointer;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Timers;
 using HJJJJ.DeskReach.Plugins.PluginMenu;
@@ -35,7 +33,7 @@ namespace HJJJJ.DeskReach.Plugins.Screen
         }
 
 
-        internal override void RegInit(Client client)
+        public override void RegInit(Client client)
         {
             base.RegInit(client);
 
@@ -174,10 +172,10 @@ namespace HJJJJ.DeskReach.Plugins.Screen
                         Name = "视频质量",
                         Enable = true,
                         Items = new object[] { "Speed", "Low", "Nomal", "High", "Quality" },
-                        OnIndexChanged = new Action<string>((e) =>
+                        OnIndexChanged = new Action<MenuItem,ComboBoxSelectedEvnetArgs>((sender,e) =>
                         {
                             int quality = 0;
-                            switch (e)
+                            switch (e.Text)
                             {
                                 case "Speed":
                                     quality = 0;
@@ -198,7 +196,7 @@ namespace HJJJJ.DeskReach.Plugins.Screen
                             Action(new ScreenPacket(ScreenActionType.ImageQuality, null, quality));
                         })
                     },
-                    new LabelMenuItem
+                    new LabelMenuItem()
                     {
                     Name ="视频质量",
                     Enable =false,

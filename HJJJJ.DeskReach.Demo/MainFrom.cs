@@ -22,16 +22,59 @@ namespace HJJJJ.DeskReach.Demo
         private Client client = new Client();
         public MainFrom()
         {
+            CheckForIllegalCrossThreadCalls = false;
             InitializeComponent();
-            //初始化组件并启动接收程序
-          //  client.Client_OnConnectedSuccessfullyCallback = new Action(() =>);
-            client.Server_OnConnectedSuccessfullyCallback = new Action(() =>new SlaveForm(client).ShowDialog());
-            //   Store.BuidingPlugin(remoteControlFrom, remoteControlFrom, remoteControlFrom, remoteControlFrom,new DrawForm());
             textBox2.Text = "127.0.0.1:455";
+
+            MasterForm masterForm = new MasterForm(client);
+            FileTransferForm fileTransferForm = new FileTransferForm();
+            SlaveForm slaveForm = new SlaveForm(client);
+            fileTransferForm.FormClosed += SubForm_FormClosed;
+            masterForm.FormClosed += SubForm_FormClosed;
+            slaveForm.FormClosed += SubForm_FormClosed;
+            //初始化组件并启动接收程序
+            client.Server_OnConnectedSuccessfullyCallback = new Action(() =>
+            {
+                Invoke((MethodInvoker)delegate
+                {
+                    this.Hide();
+                    slaveForm.Show();
+                });
+
+            });
+            client.Client_OnConnectedSuccessfullyCallback = new Action(() =>
+            {
+                // 根据选择功能打开不同的窗体
+                if (RemoteControlRadio.Checked)
+                {
+                    Invoke((MethodInvoker)delegate
+                    {
+                        this.Hide();
+                        masterForm.Show();
+                    });
+                }
+                else if (FileTransferRadio.Checked)
+                {
+                    Invoke((MethodInvoker)delegate
+                    {
+                        this.Hide();
+                        fileTransferForm.Show();
+                    });
+                }
+            });
+
         }
+
+        /// <summary>
+        /// 子窗体关闭后
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SubForm_FormClosed(object sender, FormClosedEventArgs e) => this.Show();
 
         private void button2_Click(object sender, EventArgs e)
         {
+
             try
             {
                 //获取ip地址
@@ -44,19 +87,8 @@ namespace HJJJJ.DeskReach.Demo
                 MessageBox.Show("请确保连接地址正确\n例:192.168.1.1:4555");
                 return;
             }
-
-
-            //根据选择功能打开不同的窗体
-            if (RemoteControlRadio.Checked)
-            {
-                client.Connct(TargetIP, TargetPort);
-                MasterForm masterForm =new MasterForm(client);
-                masterForm.ShowDialog();
-            }
-            else if (FileTransferRadio.Checked)
-            {
-                new FileTransferForm().ShowDialog();
-            }
+            //连接
+            client.Connct(TargetIP, TargetPort);
         }
 
         private void button1_Click(object sender, EventArgs e)

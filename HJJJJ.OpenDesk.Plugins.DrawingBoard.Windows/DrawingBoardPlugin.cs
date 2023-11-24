@@ -60,7 +60,7 @@ namespace HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows
                             new ButtonMenuItem
                         {
                         Name="清空画板",
-                        OnClick = OpenBoard
+                        OnClick = ClearBoard
                         },
                         new ButtonMenuItem
                         {
@@ -81,7 +81,7 @@ namespace HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows
         /// <summary>
         /// 打开画板
         /// </summary>
-        private void OpenBoard()
+        private void OpenBoard(object sender,EventArgs e)
         {
             //修改当前为画画模式
             client.IsDrawing = true;
@@ -91,11 +91,19 @@ namespace HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows
         /// <summary>
         /// 关闭画板
         /// </summary>
-        private void CloseBoard()
+        private void CloseBoard(object sender, EventArgs e)
         {
             //修改当前为画画模式
             client.IsDrawing = true;
             Action(new DrawingBoardPacket(DrawingBoardActionType.CloseDrawingBoard));
+        }
+
+        /// <summary>
+        /// 清除画板
+        /// </summary>
+        private void ClearBoard(object sender, EventArgs e)
+        {
+
         }
 
         /// <summary>
@@ -112,7 +120,7 @@ namespace HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows
                 case DrawingBoardActionType.OpenDrawingBoard:
                     ViewContext.OpenDrawingBoard();
                     break;
-                case DrawingBoardActionType.CloseDrawingBoard:
+                case DrawingBoardActionType.CloseDrawingBoard: 
                     ViewContext.CloseDrawingBoard();
                     break;
                 case DrawingBoardActionType.DrawingBoardStroke:

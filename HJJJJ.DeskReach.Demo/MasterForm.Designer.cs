@@ -35,9 +35,6 @@
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.sdsdsdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.richTextBox = new System.Windows.Forms.RichTextBox();
-            this.button1 = new System.Windows.Forms.Button();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -46,7 +43,6 @@
             this.screenPanel.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.panel2.SuspendLayout();
-            this.panel3.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -70,6 +66,7 @@
             this.screenPanel.Name = "screenPanel";
             this.screenPanel.Size = new System.Drawing.Size(1436, 849);
             this.screenPanel.TabIndex = 2;
+            this.screenPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.screenPanel_Paint);
             // 
             // menuStrip
             // 
@@ -86,48 +83,19 @@
             // sdsdsdToolStripMenuItem
             // 
             this.sdsdsdToolStripMenuItem.Name = "sdsdsdToolStripMenuItem";
-            this.sdsdsdToolStripMenuItem.Size = new System.Drawing.Size(86, 28);
-            this.sdsdsdToolStripMenuItem.Text = "sdsdsd";
+            this.sdsdsdToolStripMenuItem.Size = new System.Drawing.Size(116, 28);
+            this.sdsdsdToolStripMenuItem.Text = "打开命令行";
+            this.sdsdsdToolStripMenuItem.Click += new System.EventHandler(this.sdsdsdToolStripMenuItem_Click);
             // 
             // panel2
             // 
-            this.panel2.Controls.Add(this.panel3);
             this.panel2.Controls.Add(this.statusStrip);
             this.panel2.Controls.Add(this.toolStrip);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel2.Location = new System.Drawing.Point(0, 690);
+            this.panel2.Location = new System.Drawing.Point(0, 793);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1436, 159);
+            this.panel2.Size = new System.Drawing.Size(1436, 56);
             this.panel2.TabIndex = 3;
-            // 
-            // panel3
-            // 
-            this.panel3.Controls.Add(this.richTextBox);
-            this.panel3.Controls.Add(this.button1);
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel3.Location = new System.Drawing.Point(0, 25);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(1436, 103);
-            this.panel3.TabIndex = 2;
-            // 
-            // richTextBox
-            // 
-            this.richTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.richTextBox.Location = new System.Drawing.Point(0, 0);
-            this.richTextBox.Name = "richTextBox";
-            this.richTextBox.Size = new System.Drawing.Size(1322, 103);
-            this.richTextBox.TabIndex = 0;
-            this.richTextBox.Text = "";
-            // 
-            // button1
-            // 
-            this.button1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button1.Location = new System.Drawing.Point(1322, 0);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(114, 103);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
             // 
             // statusStrip
             // 
@@ -135,7 +103,7 @@
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1,
             this.toolStripStatusLabel2});
-            this.statusStrip.Location = new System.Drawing.Point(0, 128);
+            this.statusStrip.Location = new System.Drawing.Point(0, 25);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(1436, 31);
             this.statusStrip.TabIndex = 1;
@@ -178,7 +146,6 @@
             this.menuStrip.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
-            this.panel3.ResumeLayout(false);
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -196,9 +163,7 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
         private System.Windows.Forms.ToolStrip toolStrip;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.RichTextBox richTextBox;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ColorDialog colorDialog;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
     }
 }

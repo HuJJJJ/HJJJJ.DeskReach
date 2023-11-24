@@ -29,7 +29,7 @@ namespace HJJJJ.DeskReach.Plugins.TextMessage.Windows
         private void TextMessagePlugin_OnDataReceived(object sender, byte[] e)
         {
             var data = new TextMessagePacket(e);
-            switch ((TextMessageActionType)data.Code)
+            switch (data.Code)
             {
                 case TextMessageActionType.SendMessage:
                     ViewContext.ShowMessage(data.Message);

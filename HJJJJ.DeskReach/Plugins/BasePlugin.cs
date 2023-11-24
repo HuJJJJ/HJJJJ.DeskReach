@@ -36,7 +36,7 @@ namespace HJJJJ.DeskReach.Plugins
         }
 
 
-        internal virtual void RegInit(Client client)
+        public virtual void RegInit(Client client)
         {
             this.client = client;
         }
