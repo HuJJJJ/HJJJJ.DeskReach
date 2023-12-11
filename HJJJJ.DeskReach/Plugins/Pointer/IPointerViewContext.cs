@@ -10,6 +10,6 @@ namespace HJJJJ.DeskReach.Plugins.Pointer
         /// <summary>
         /// 当前屏幕分辨率
         /// </summary>
-      Rectangle Area { get; set; }
+      Rectangle PointerViewBounds { get; set; }
     }
 }

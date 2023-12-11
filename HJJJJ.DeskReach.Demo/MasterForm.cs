@@ -2,8 +2,7 @@
 using HJJJJ.DeskReach.Plugins.Keyboard;
 using HJJJJ.DeskReach.Plugins.PluginMenu;
 using HJJJJ.DeskReach.Plugins.Pointer;
-//using HJJJJ.DeskReach.Plugins.Screen;
-using HJJJJ.DeskReach.Plugins.Screen;
+using HJJJJ.DeskReach.Plugins.Screen.Windows;
 using HJJJJ.DeskReach.Plugins.TextMessage.Windows;
 using HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows;
 using HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows.Entities;
@@ -34,20 +33,29 @@ namespace HJJJJ.DeskReach.Demo
         private int frameCount = 0;
         private DateTime lastFrameTime;
         private System.Windows.Forms.Label fpsLabel;
-        private PictureBox pictureBox;
         private Client client;
         private PointerPlugin pointer;
         private ScreenPlugin screen;
         private TextMessagePlugin textMessage;
         private KeyboardPlugin keyboard;
         private DrawingBoardPlugin drawingBoard;
-        private CMDForm CMDForm;
-        public Rectangle Area { get; set; }
+        private CommandPromptPlugin command;
 
+        public Rectangle PointerViewBounds { get; set; }
+        public Rectangle ScreenViewBounds { get; set; }
         public MasterForm(Client _client)
         {
             InitializeComponent();
             CheckForIllegalCrossThreadCalls = false;
+
+            //获取缩放比例
+            var scalingFactor = WindowsAPIScreenCapture.GetScreenScalingFactor();
+            //获取分辨率
+            PointerViewBounds = Screen.GetBounds(this);
+            var bounds = Screen.GetBounds(this);
+            bounds.Width = Convert.ToInt32(Screen.PrimaryScreen.Bounds.Width * scalingFactor);
+            bounds.Height = Convert.ToInt32(Screen.PrimaryScreen.Bounds.Height * scalingFactor);
+            ScreenViewBounds = bounds;
             //初始化客户端和插件
             this.client = _client;
             pointer = new PointerPlugin(this);
@@ -55,20 +63,20 @@ namespace HJJJJ.DeskReach.Demo
             textMessage = new TextMessagePlugin(this);
             keyboard = new KeyboardPlugin(this);
             drawingBoard = new DrawingBoardPlugin(new DrawForm());
+            command = new CommandPromptPlugin(new CMDForm(client));
             client.RegPlugin(pointer);
             client.RegPlugin(screen);
             client.RegPlugin(textMessage);
             client.RegPlugin(keyboard);
             client.RegPlugin(drawingBoard);
+            client.RegPlugin(command);
 
-            //cmd窗口
-            CMDForm = new CMDForm(client);
-            Area = Screen.GetBounds(this);
+
             //监听键盘
             this.KeyPress += MainForm_KeyPress;
-
             //初始化界面
             InitView();
+
         }
         /// <summary>
         /// 初始化界面
@@ -82,10 +90,11 @@ namespace HJJJJ.DeskReach.Demo
             screenPanel.Controls.SetChildIndex(fpsLabel, 0);
 
             //视频显示框
-            pictureBox = new PictureBox();
             pictureBox.Dock = DockStyle.Fill;
+            pictureBox.SizeMode = PictureBoxSizeMode.AutoSize;
+            pictureBox.BringToFront();
 
-            ///界面的鼠标控制事件
+            //界面的鼠标控制事件
             pictureBox.MouseClick += (object sender, MouseEventArgs e) => { if (!client.IsDrawing) pointer.Action(new PointerPacket(new Point() { X = e.X * 100 / pictureBox.Width, Y = e.Y * 100 / pictureBox.Height }, PointerActionType.Left)); };
             pictureBox.MouseDoubleClick += (object sender, MouseEventArgs e) => { if (!client.IsDrawing) pointer.Action(new PointerPacket(new Point() { X = e.X * 100 / pictureBox.Width, Y = e.Y * 100 / pictureBox.Height }, PointerActionType.DoubleLeft)); };
             pictureBox.MouseWheel += (object sender, MouseEventArgs e) => { if (!client.IsDrawing) pointer.Action(new PointerPacket(new Point() { X = e.X * 100 / pictureBox.Width, Y = e.Y * 100 / pictureBox.Height }, PointerActionType.MouseWheel, e.Delta)); };
@@ -95,6 +104,21 @@ namespace HJJJJ.DeskReach.Demo
             pictureBox.MouseDown += new MouseEventHandler(TransparentPanel_MouseDown);
             pictureBox.MouseUp += new MouseEventHandler(TransparentPanel_MouseUp);
             pictureBox.MouseMove += new MouseEventHandler(OnMouseMove);
+
+            //cmd插件
+            var cmdMenu = command.GetMenuItems(MenuPosition.StatusMenu);
+
+            foreach (var item in cmdMenu)
+            {
+                if (item is ButtonMenuItem)
+                {
+                    var btn = (ButtonMenuItem)item;
+                    var toolBtn = new ToolStripButton();
+                    toolBtn.Text = btn.Name;
+                    toolBtn.Click += (object sender, EventArgs e) => { btn.OnClick?.Invoke(btn, e); };
+                    this.statusStrip.Items.Add(toolBtn);
+                }
+            }
 
             //board插件
             var drawingBoardToolMenu = drawingBoard.GetMenuItems(MenuPosition.ToolMenu);
@@ -125,8 +149,25 @@ namespace HJJJJ.DeskReach.Demo
                     comboBox.SelectedIndexChanged += (object sender, EventArgs e) =>
                     {
                         ToolStripComboBox text = (ToolStripComboBox)sender;
-                        comboBoxItem.OnIndexChanged?.Invoke(comboBoxItem,new ComboBoxSelectedEvnetArgs { Text = text.SelectedItem.ToString()});
-                    }; ;
+                        switch (text.SelectedItem.ToString())
+                        {
+                            case "小":
+                                this.LineSegmentWidth = 2;
+                                break;
+                            case "中":
+                                this.LineSegmentWidth = 4;
+                                break;
+                            case "大":
+                                this.LineSegmentWidth = 6;
+                                break;
+                        }
+                        this.ActiveControl = null;
+                    };
+                    //comboBox.SelectedIndexChanged += (object sender, EventArgs e) =>
+                    //{
+                    //    ToolStripComboBox text = (ToolStripComboBox)sender;
+                    //    comboBoxItem.OnIndexChanged?.Invoke(comboBoxItem, new ComboBoxSelectedEvnetArgs { Text = text.SelectedItem.ToString() });
+                    //}; ;
                     ToolStripLabel label = new ToolStripLabel();
                     label.Text = comboBoxItem.Name;
                     this.toolStrip.Items.Add(label);
@@ -142,10 +183,12 @@ namespace HJJJJ.DeskReach.Demo
                 var comboBox = new ToolStripComboBox();
                 comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
                 comboBox.Items.AddRange(comboBoxItem.Items);
+                comboBox.SelectedIndex = 0;
                 comboBox.SelectedIndexChanged += (object sender, EventArgs e) =>
                 {
                     ToolStripComboBox item = (ToolStripComboBox)sender;
                     comboBoxItem.OnIndexChanged?.Invoke(screenToolMenu, new ComboBoxSelectedEvnetArgs { Text = item.SelectedItem.ToString() });
+                    this.ActiveControl = null;
                 }; ;
                 ToolStripLabel label = new ToolStripLabel();
                 label.Text = comboBoxItem.Name;
@@ -179,23 +222,26 @@ namespace HJJJJ.DeskReach.Demo
         /// <param name="image"></param>
         public void ShowImage(byte[] image)
         {
-            var tempFrame = image.ToBitmap();
-            int targetWidth = this.pictureBox.Width;
-            int targetHeight = (int)((float)tempFrame.Height / tempFrame.Width * targetWidth);
-
-            //var frame = tempFrame.GetThumbnailImage(targetWidth, targetHeight, null, IntPtr.Zero);
-            //tempFrame.Dispose();
-            Bitmap resizedBitmap = new Bitmap(tempFrame, targetWidth, targetHeight);
-            tempFrame.Dispose();
-            this.pictureBox.Image = resizedBitmap;
-            // 检查是否达到了一秒钟
-            if (DateTime.Now - lastFrameTime >= TimeSpan.FromSeconds(1))
+            try
             {
-                // 显示帧率并重置帧数和计时器
-                fpsLabel.Text = $"FPS: {frameCount}";
-                frameCount = 0;
-                lastFrameTime = DateTime.Now;
+                var tempFrame = image.ToBitmap();
+                int targetWidth = this.pictureBox.Width;
+                int targetHeight = (int)((float)tempFrame.Height / tempFrame.Width * targetWidth);
+                this.pictureBox.Image = tempFrame.GetThumbnailImage(targetWidth, targetHeight, null, IntPtr.Zero);
+                // 检查是否达到了一秒钟
+                if (DateTime.Now - lastFrameTime >= TimeSpan.FromSeconds(1))
+                {
+                    // 显示帧率并重置帧数和计时器
+                    fpsLabel.Text = $"FPS: {frameCount}";
+                    frameCount = 0;
+                    lastFrameTime = DateTime.Now;
+                }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
         }
 
         /// <summary>
@@ -213,63 +259,33 @@ namespace HJJJJ.DeskReach.Demo
             screen.StartReceive();         //启动图像接受
             //请求传输图像
             screen.Action(new ScreenPacket(ScreenActionType.RequestImage));
-
-            // 创建定时器
-            timer = new System.Windows.Forms.Timer();
-            timer.Interval = 50; // 设置定时器间隔（毫秒）
-            timer.Tick += Timer_Tick; // 关联定时器的Tick事件处理程序
         }
 
-        private System.Windows.Forms.Timer timer;
-        System.Windows.Forms.Label messageLabel;
 
 
-        private void toolStripButton5_Click(object sender, EventArgs e)
-        {
 
-            textMessage.Action(new TextMessagePacket("我是奥特曼", TextMessageActionType.SendMessage));
-        }
 
         public void ShowMessage(string message)
         {
-            var y = screenPanel.Height / 2;
-            this.Invoke(new MethodInvoker(delegate
-            {
-                var lastFrameTime = DateTime.Now;
-                messageLabel = new System.Windows.Forms.Label();
-                messageLabel.Text = message;
-                messageLabel.Location = new Point(0, y);
-                messageLabel.Font = new Font("微软雅黑", 12f); // 设置字体为微软雅黑，大小为12
-                messageLabel.ForeColor = Color.White;
-                messageLabel.BackColor = Color.Transparent;
-                messageLabel.Parent = pictureBox;
-                pictureBox.BackColor = Color.Transparent;
-                messageLabel.AutoSize = true;
-                pictureBox.Controls.Add(messageLabel);
-                pictureBox.Controls.SetChildIndex(messageLabel, 0);
-                timer.Start();
-            }));
+            //var y = screenPanel.Height / 2;
+            //this.Invoke(new MethodInvoker(delegate
+            //{
+            //    var lastFrameTime = DateTime.Now;
+            //    messageLabel = new System.Windows.Forms.Label();
+            //    messageLabel.Text = message;
+            //    messageLabel.Location = new Point(0, y);
+            //    messageLabel.Font = new Font("微软雅黑", 12f); // 设置字体为微软雅黑，大小为12
+            //    messageLabel.ForeColor = Color.White;
+            //    messageLabel.BackColor = Color.Transparent;
+            //    messageLabel.Parent = pictureBox;
+            //    pictureBox.BackColor = Color.Transparent;
+            //    messageLabel.AutoSize = true;
+            //    pictureBox.Controls.Add(messageLabel);
+            //    pictureBox.Controls.SetChildIndex(messageLabel, 0);
+            //    timer.Start();
+            //}));
         }
 
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            if (messageLabel.Visible == false)
-            {
-                messageLabel.Visible = true; // 当定时器开始运行时，让标签显示
-            }
-            else
-            {
-                if (messageLabel.ForeColor.A > 0)
-                {
-                    messageLabel.ForeColor = Color.FromArgb(messageLabel.ForeColor.A - 5, messageLabel.ForeColor);
-                }
-                else
-                {
-                    timer.Stop(); // 当标签完全消失时，停止定时器
-                    messageLabel.Visible = false;
-                }
-            }
-        }
 
         /// <summary>
         /// 模拟按键输入
@@ -303,39 +319,16 @@ namespace HJJJJ.DeskReach.Demo
         }
 
 
-        private void sdsdsdToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            CMDForm.Show();
-        }
 
         private void screenPanel_Paint(object sender, PaintEventArgs e)
         {
 
         }
 
+        private void MasterForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
 
-        //private void BrushSizeComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        //{
-        //    switch (this.BrushSizeComboBox.SelectedItem.ToString())
-        //    {
-        //        case "小号":
-        //            this.LineSegmentWidth = 2;
-        //            break;
-        //        case "中号":
-        //            this.LineSegmentWidth = 5;
-        //            break;
-        //        case "大号":
-        //            this.LineSegmentWidth = 10;
-        //            break;
-        //        case "超大号":
-        //            this.LineSegmentWidth = 15;
-        //            break;
-        //        default:
-        //            this.LineSegmentWidth = 2;
-        //            break;
-
-        //    }
-        //}
+        }
     }
 
     public static class MenuItemExtensions

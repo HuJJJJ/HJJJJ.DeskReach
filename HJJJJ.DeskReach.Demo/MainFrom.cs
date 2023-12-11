@@ -25,7 +25,6 @@ namespace HJJJJ.DeskReach.Demo
             CheckForIllegalCrossThreadCalls = false;
             InitializeComponent();
             textBox2.Text = "127.0.0.1:455";
-
             MasterForm masterForm = new MasterForm(client);
             FileTransferForm fileTransferForm = new FileTransferForm();
             SlaveForm slaveForm = new SlaveForm(client);
@@ -40,7 +39,7 @@ namespace HJJJJ.DeskReach.Demo
                     this.Hide();
                     slaveForm.Show();
                 });
-
+                client.CloseClient();
             });
             client.Client_OnConnectedSuccessfullyCallback = new Action(() =>
             {
@@ -52,6 +51,7 @@ namespace HJJJJ.DeskReach.Demo
                         this.Hide();
                         masterForm.Show();
                     });
+                    client.CloseServer();
                 }
                 else if (FileTransferRadio.Checked)
                 {
@@ -70,11 +70,17 @@ namespace HJJJJ.DeskReach.Demo
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SubForm_FormClosed(object sender, FormClosedEventArgs e) => this.Show();
+        private void SubForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            client.CloseClient();
+            client.CloseServer();
+            client.Dispose();
+            client = new Client();
+            this.Show();
+        }
 
         private void button2_Click(object sender, EventArgs e)
         {
-
             try
             {
                 //获取ip地址

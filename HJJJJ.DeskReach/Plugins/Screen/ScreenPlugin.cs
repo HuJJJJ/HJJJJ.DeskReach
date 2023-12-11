@@ -20,6 +20,7 @@ namespace HJJJJ.DeskReach.Plugins.Screen
         private object queueLock;
         private int frameCount = 0;
         private DateTime lastFrameTime;
+        private int Quality = 20;
 
 
         public ScreenPlugin(IScreenViewContext viewContext)
@@ -59,7 +60,7 @@ namespace HJJJJ.DeskReach.Plugins.Screen
                     break;
             }
         }
-        int Quality = 20;
+
 
 
         /// <summary>

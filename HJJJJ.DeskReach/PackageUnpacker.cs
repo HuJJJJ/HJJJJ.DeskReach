@@ -14,6 +14,7 @@ namespace HJJJJ.DeskReach
         }
         protected override int CalculatePacketLength(IEnumerable<byte> bytes)
         {
+            var data = bytes.ToList();
             return BitConverter.ToInt32(bytes.ToArray(), 0);
         }
     }

@@ -55,8 +55,6 @@ public class WindowsAPIScreenCapture
         IntPtr desktop = g.GetHdc();
         var physicalScreenHeight = GetDeviceCaps(desktop, (int)DeviceCap.DESKTOPVERTRES);
         var screenScalingFactor = (double)physicalScreenHeight / Screen.PrimaryScreen.Bounds.Height;
-        //SystemParameters.PrimaryScreenHeight;
-
         return screenScalingFactor;
     }
     public static byte[] CaptureScreen(int quality)
@@ -87,13 +85,13 @@ public class WindowsAPIScreenCapture
         //释放位图的上下文设备
         g2.ReleaseHdc(dc2);
         var image = MyImage.GetThumbnailImage(tmpWidth / 3, tmpHeigth / 3, null, IntPtr.Zero);
+ 
         MyImage.Dispose();
         return ZipImage(image, quality);
     }
 
     private static byte[] ZipImage(System.Drawing.Image image, long level)
     {
-
         ImageCodecInfo jpegEncoder = GetEncoder(ImageFormat.Jpeg);
         EncoderParameters encoderParameters = new EncoderParameters(1);
         EncoderParameter encoderParameter = new EncoderParameter(Encoder.Quality, level);
@@ -105,7 +103,6 @@ public class WindowsAPIScreenCapture
             image.Dispose();
             return bytes;
         }
-
     }
 
     private static ImageCodecInfo GetEncoder(ImageFormat format)

@@ -7,9 +7,9 @@ using System.Threading;
 using System.Timers;
 using HJJJJ.DeskReach.Plugins.PluginMenu;
 using System.Drawing;
-using AForge.Video;
 using System.Diagnostics.Tracing;
 using System.Drawing.Imaging;
+using AForge.Video;
 
 namespace HJJJJ.DeskReach.Plugins.Screen.Windows
 {
@@ -23,18 +23,24 @@ namespace HJJJJ.DeskReach.Plugins.Screen.Windows
         private object queueLock;
         private int frameCount = 0;
         private DateTime lastFrameTime;
-        private int Quality = 20;
+        private long Quality = 20;
         private ScreenObserver screenObserver;
-
+        private EncoderParameters encoderParameters;
+       private ImageCodecInfo jpegEncoder;
         public ScreenPlugin(IScreenViewContext viewContext)
         {
-            ScreenObserver.InitDllPath();
-            screenObserver = new ScreenObserver();
+            //视频录制器
+            screenObserver = new ScreenObserver(viewContext.ScreenViewBounds, VideoSource_NewFrame);
             ViewContext = viewContext;
             OnDataReceived += ScreenPlugin_OnDataReceived;
             frameQueue = new Queue<byte[]>();
             queueLock = new object();
+
+            //图片压缩器初始化
+             encoderParameters = new EncoderParameters(1);
+             jpegEncoder = screenObserver.GetEncoder(ImageFormat.Jpeg);
         }
+
 
 
         public override void RegInit(Client client)
@@ -47,7 +53,7 @@ namespace HJJJJ.DeskReach.Plugins.Screen.Windows
             switch (screen.Code)
             {
                 case ScreenActionType.RequestImage:
-                    screenObserver.Start(VideoStreamer_NewFrame);
+                    screenObserver.Start();
                     break;
                 case ScreenActionType.ImageFrame:
                     EnqueueFrame(screen.Image);
@@ -61,7 +67,6 @@ namespace HJJJJ.DeskReach.Plugins.Screen.Windows
                     break;
             }
         }
-
 
 
         /// <summary>
@@ -91,18 +96,43 @@ namespace HJJJJ.DeskReach.Plugins.Screen.Windows
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void VideoStreamer_NewFrame(object sender, NewFrameEventArgs e)
+        private void VideoSource_NewFrame(object sender, NewFrameEventArgs eventArgs)
         {
-            var bitmap = (Bitmap)e.Frame.Clone();
-            var image = bitmap.GetThumbnailImage(bitmap.Width / 2, bitmap.Height / 2, null, IntPtr.Zero);
-            bitmap.Dispose();
-            using (MemoryStream ms = new MemoryStream())
+            var image = (Bitmap)eventArgs.Frame.Clone();
+            encoderParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, Quality); ;
+
+            if (jpegEncoder != null)
             {
-                image.Save(ms, ImageFormat.Jpeg);
-                image.Dispose();
-                SendFrame(ms.ToArray());
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    image.Save(ms, jpegEncoder, encoderParameters);
+                    image.Dispose();
+                    SendFrame(ms.ToArray());
+                }
+            }
+            else
+            {
+                Console.WriteLine("JPEG 编码器无法找到");
             }
         }
+
+        ///// <summary>
+        ///// 每一帧的处理
+        ///// </summary>
+        ///// <param name="sender"></param>
+        ///// <param name="e"></param>
+        //private void VideoStreamer_NewFrame(object sender, NewFrameEventArgs e)
+        //{
+        //    var bitmap = (Bitmap)e.Frame.Clone();
+        //    var image = bitmap.GetThumbnailImage(bitmap.Width / 2, bitmap.Height / 2, null, IntPtr.Zero);
+        //    bitmap.Dispose();
+        //    using (MemoryStream ms = new MemoryStream())
+        //    {
+        //        image.Save(ms, ImageFormat.Jpeg);
+        //        image.Dispose();
+        //        SendFrame(ms.ToArray());
+        //    }
+        //}
 
         /// <summary>
         /// 启动接收图片线程

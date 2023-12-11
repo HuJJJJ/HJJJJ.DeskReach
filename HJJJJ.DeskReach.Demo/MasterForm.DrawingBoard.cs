@@ -72,7 +72,7 @@ namespace HJJJJ.DeskReach.Demo
         /// <param name="e"></param>
         protected void OnMouseMove(object sender, MouseEventArgs e)
         {
-            Area = Screen.GetBounds(this);
+            PointerViewBounds = Screen.GetBounds(this);
             base.OnMouseMove(e);
             if (client.IsDrawing && Control.MouseButtons == MouseButtons.Left)
             {

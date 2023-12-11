@@ -33,10 +33,10 @@ namespace HJJJJ.DeskReach.Plugins.Pointer
         {
             var pointer = new PointerPacket(bytes);
             //按屏幕比例转换鼠标位置
-            var width = Convert.ToInt32((double)(pointer.X / 100.0) * ViewContext.Area.Width);
-            var height = Convert.ToInt32((double)(pointer.Y / 100.0) * ViewContext.Area.Height);
+            var width = Convert.ToInt32((double)(pointer.X / 100.0) * ViewContext.PointerViewBounds.Width);
+            var height = Convert.ToInt32((double)(pointer.Y / 100.0) * ViewContext.PointerViewBounds.Height);
             //移动鼠标
-            mouse_event(MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE, width * 65535 / ViewContext.Area.Width, height * 65535 / ViewContext.Area.Height, 0, 0);
+            mouse_event(MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE, width * 65535 / ViewContext.PointerViewBounds.Width, height * 65535 / ViewContext.PointerViewBounds.Height, 0, 0);
 
             switch (pointer.Code)
             {

@@ -12,7 +12,7 @@ using STTech.BytesIO.Tcp;
 
 namespace HJJJJ.DeskReach
 {
-    public class Client : IClient
+    public partial class Client : IClient, IDisposable
     {
         /// <summary>
         /// 解包器
@@ -62,49 +62,16 @@ namespace HJJJJ.DeskReach
         public Client()
         {
             client = new TcpClient();
-            client.OnConnectedSuccessfully += Client_OnConnectedSuccessfully;
             server = new TcpServer();
             unpacker = new PackageUnpacker();
+            client.OnConnectedSuccessfully += Client_OnConnectedSuccessfully;
+            client.OnConnectionFailed += Client_OnConnectionFailed;
             unpacker.OnDataParsed += Unpacker_OnDataParsed;
             server.ClientConnected += Server_ClientConnected;
+            server.Started += Server_Started;
             Plugins = new List<BasePlugin>();
         }
 
-
-        /// <summary>
-        /// 客户端连接事件
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Client_OnConnectedSuccessfully(object sender, STTech.BytesIO.Core.ConnectedSuccessfullyEventArgs e)
-        {
-            ///客户端主动连接，app为控制端
-            lock (ConnectLock)
-            {
-                if (Role == ClientRoleType.None)
-                {
-                    client.OnDataReceived += Client_OnDataReceived;
-                    Role = ClientRoleType.ControlEnd;
-                }
-            }
-            Client_OnConnectedSuccessfullyCallback?.Invoke();
-        }
-
-        /// <summary>
-        /// 服务端连接事件
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Server_ClientConnected(object sender, STTech.BytesIO.Tcp.Entity.ClientConnectedEventArgs e)
-        {
-            ///服务端被动连接。app为受控端
-            if (Role == ClientRoleType.None)
-            {
-                e.Client.OnDataReceived += (object s, STTech.BytesIO.Core.DataReceivedEventArgs g) => unpacker.Input(g.Data);
-                Role = ClientRoleType.ControlledEnd;
-            }
-            Server_OnConnectedSuccessfullyCallback?.Invoke();
-        }
 
         /// <summary>
         /// 连接
@@ -120,11 +87,21 @@ namespace HJJJJ.DeskReach
         public void CloseClient() 
         {
             client.Disconnect();
+         
         }
         public void CloseServer() 
         {
             server.CloseAsync();
+       
         }
+
+        public void Dispose()
+        {
+            client.Dispose();
+            server.Dispose();
+        }
+
+
 
         /// <summary>
         /// 启动受控端
@@ -151,20 +128,12 @@ namespace HJJJJ.DeskReach
             }
         }
 
-        private void Client_OnDataReceived(object sender, STTech.BytesIO.Core.DataReceivedEventArgs e) => unpacker.Input(e.Data);
-        private void Unpacker_OnDataParsed(object sender, STTech.BytesIO.Core.Component.DataParsedEventArgs e)
-        {
-            BasePackage package = new BasePackage(e.Data);
-            ReceivedBytes(package);
-        }
-
         protected override void ReceivedBytes(BasePackage response)
         {
           var a =  response.PluginName;
             Plugins
                 .ForEach(x =>
                 {
-                    
                     if (x.GetType().ToString() == response.PluginName)
                     {
                         x.RaiseDataReceived(this, response.DetailData);
@@ -185,7 +154,6 @@ namespace HJJJJ.DeskReach
                     server.Clients.First().SendAsync(bytes);
                     break;
             }
-          
         }
     }
 }

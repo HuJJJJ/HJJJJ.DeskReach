@@ -1,7 +1,7 @@
 ﻿using HJJJJ.DeskReach.Plugins.CommandPrompt.Windows;
 using HJJJJ.DeskReach.Plugins.Keyboard;
 using HJJJJ.DeskReach.Plugins.Pointer;
-using HJJJJ.DeskReach.Plugins.Screen;
+using HJJJJ.DeskReach.Plugins.Screen.Windows;
 using HJJJJ.DeskReach.Plugins.TextMessage.Windows;
 using HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows;
 using System;

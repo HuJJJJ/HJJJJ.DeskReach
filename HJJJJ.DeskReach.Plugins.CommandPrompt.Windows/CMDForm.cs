@@ -22,7 +22,6 @@ namespace HJJJJ.DeskReach.Plugins.CommandPrompt.Windows
             client = _client;
             cmd = new CommandPromptPlugin(this);
             client.RegPlugin(cmd);
-
         }
 
         public void HideCmd()
@@ -32,7 +31,7 @@ namespace HJJJJ.DeskReach.Plugins.CommandPrompt.Windows
 
         public void ShowCmd()
         {
-           // this.Show();
+            this.Show();
         }
 
         public void ShowCmdOutput(string data)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HJJJJ.DeskReach.Plugins.PluginMenu;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -31,6 +32,34 @@ namespace HJJJJ.DeskReach.Plugins.CommandPrompt.Windows
             base.RegInit(client);
         }
 
+
+        public override List<PluginMenu.MenuItem> GetMenuItems(MenuPosition pos)
+        {
+            var menu = new List<PluginMenu.MenuItem>();
+            switch (pos)
+            {
+                case MenuPosition.TopMenu:
+                    break;
+                case MenuPosition.Screen:
+                    break;
+                case MenuPosition.ToolBar:
+                    break;
+                case MenuPosition.ToolMenu:
+                    break;
+                case MenuPosition.StatusMenu:
+                    menu.Add(new ButtonMenuItem()
+                    {
+                        Name = "打开命令行",
+                        OnClick = new Action<PluginMenu.MenuItem, EventArgs>((sender, e) =>
+                        {
+                            ViewContext.ShowCmd();
+                        })
+                    });
+                    break;
+                   
+            }
+                    return menu;
+        }
         private void CommandPromptPlugin_OnDataReceived(object sender, byte[] e)
         {
             var data = new CommandPromptPacket(e);

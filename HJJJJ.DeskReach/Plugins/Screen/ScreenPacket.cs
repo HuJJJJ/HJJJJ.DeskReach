@@ -6,8 +6,6 @@ using System.Text;
 namespace HJJJJ.DeskReach.Plugins.Screen
 {
     public class ScreenPacket : BasePacket
-
-
     {        /// <summary>
              /// 具体操作
              /// </summary>

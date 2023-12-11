@@ -11,7 +11,7 @@ namespace HJJJJ.DeskReach.Plugins.Screen
         /// <summary>
         /// 当前屏幕分辨率
         /// </summary>
-        Rectangle Bounds { get; set; }
+        Rectangle ScreenViewBounds { get; set; }
 
         byte[] GetImage(int quality);
         void ShowImage(byte[] image);
