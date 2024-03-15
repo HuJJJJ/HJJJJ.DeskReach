@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Xml.Linq;
 using HJJJJ.DeskReach.Entities;
 using HJJJJ.DeskReach.Plugins;
-using HJJJJ.DeskReach.Plugins.Keyboard;
-using HJJJJ.DeskReach.Plugins.Pointer;
-using HJJJJ.DeskReach.Plugins.Screen;
 using STTech.BytesIO.Tcp;
 
 namespace HJJJJ.DeskReach
@@ -22,12 +17,12 @@ namespace HJJJJ.DeskReach
         /// <summary>
         /// TCPClient
         /// </summary>
-        private TcpClient client;
+        public TcpClient client;
 
         /// <summary>
         /// TCPClient
         /// </summary>
-        private TcpServer server;
+        public TcpServer server;
 
         private List<BasePlugin> Plugins;
 
@@ -36,22 +31,7 @@ namespace HJJJJ.DeskReach
         /// </summary>
         private ClientRoleType Role;
 
-        public ClientRoleType GetRole() { return Role; }
-
-        /// <summary>
-        /// 连接锁
-        /// </summary>
-        private object ConnectLock = new object();
-
-        /// <summary>
-        /// 客户端连接成功
-        /// </summary>
-        public Action Client_OnConnectedSuccessfullyCallback;
-
-        /// <summary>
-        /// 服务端连接成功
-        /// </summary>
-        public Action Server_OnConnectedSuccessfullyCallback;
+        public ClientRoleType GetRole() => Role;
 
         /// <summary>
         /// 当前是否是画画模式
@@ -62,37 +42,44 @@ namespace HJJJJ.DeskReach
         public Client()
         {
             client = new TcpClient();
+            client.ReceiveBufferSize = 3000000;
             server = new TcpServer();
             unpacker = new PackageUnpacker();
+            unpacker.OnDataParsed += Unpacker_OnDataParsed;
             client.OnConnectedSuccessfully += Client_OnConnectedSuccessfully;
             client.OnConnectionFailed += Client_OnConnectionFailed;
-            unpacker.OnDataParsed += Unpacker_OnDataParsed;
+            client.OnDisconnected += Client_OnDisconnected;
             server.ClientConnected += Server_ClientConnected;
             server.Started += Server_Started;
+            server.Closed += Server_Closed;
             Plugins = new List<BasePlugin>();
         }
+
+
+
+
 
 
         /// <summary>
         /// 连接
         /// </summary>
         /// <param name="timeout"></param>
-        public void Connct(string host, int port, int timeout = 10)
+        public void Connct(string host, int port, int timeout = 5000)
         {
             client.Host = host;
             client.Port = port;
             client.Connect(timeout);
         }
 
-        public void CloseClient() 
+        public void CloseClient()
         {
             client.Disconnect();
-         
+
         }
-        public void CloseServer() 
+        public void CloseServer()
         {
             server.CloseAsync();
-       
+
         }
 
         public void Dispose()
@@ -125,18 +112,37 @@ namespace HJJJJ.DeskReach
             {
                 p.RegInit(this);
                 Plugins.Add(p);
+                p.EnablePlugin();
+         //       p.EnablePlugin();
             }
         }
 
+        /// <summary>
+        /// 卸载组件
+        /// </summary>
+        /// <param name="p"></param>
+        public void UnregPlugin(BasePlugin p)
+        {
+            var plugin = Plugins.Where(item => item.GetType() == p.GetType()).FirstOrDefault();
+            if (plugin != null)
+            {
+                plugin.DisablePlugin();
+                plugin.UnregClient();
+                Plugins.Remove(plugin);
+            }
+        }
+
+
         protected override void ReceivedBytes(BasePackage response)
         {
-          var a =  response.PluginName;
+            var a = response.PluginName;
             Plugins
                 .ForEach(x =>
                 {
                     if (x.GetType().ToString() == response.PluginName)
                     {
                         x.RaiseDataReceived(this, response.DetailData);
+                        return;
                     }
                 });
         }

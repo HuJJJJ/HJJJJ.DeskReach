@@ -13,21 +13,20 @@ namespace HJJJJ.DeskReach.Plugins.Screen.Windows
         /// <summary>
         /// 图像帧
         /// </summary>
-        ImageFrame,
+        UpdateImage,
 
         /// <summary>
         /// 请求图像
         /// </summary>
-        RequestImage,
+        RequestImageRequest,
 
-        /// <summary>
-        /// 修改图片质量
-        /// </summary>
-        ImageQuality,
+        ///响应请求图像
+        RequestImageResponse,
 
         /// <summary>
         /// 图片确认帧
         /// </summary>
         ACK,
+
     }
 }

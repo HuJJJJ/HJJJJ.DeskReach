@@ -32,5 +32,15 @@ namespace HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows
         /// 确认帧
         /// </summary>
         ACK,
+
+        /// <summary>
+        /// 禁用
+        /// </summary>
+        Disable,
+
+        /// <summary>
+        /// 启用
+        /// </summary>
+        Enable
     }
 }

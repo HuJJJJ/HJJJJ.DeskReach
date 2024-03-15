@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
 
@@ -13,6 +14,8 @@ namespace HJJJJ.DeskReach.Plugins.Screen.Windows
         /// </summary>
         Rectangle ScreenViewBounds { get; set; }
 
-        void ShowImage(byte[] image);
+        void ShowImage(Bitmap bitmap);
+
+        void InitBitmap(int width, int height, PixelFormat format);
     }
 }

@@ -48,6 +48,8 @@ namespace HJJJJ.DeskReach.Plugins.Pointer
             Code = type;
         }
 
+
+
         public override byte[] GetBytes()
         {
             List<byte> bytes = new List<byte>();

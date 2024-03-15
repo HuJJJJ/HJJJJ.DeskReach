@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -18,9 +19,14 @@ namespace HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows
         public Graphics gs;
         Pen pen;
         Rectangle Area;
-        public DrawForm()
+
+        private new Form ParentForm;
+        public DrawForm(Form parentForm)
         {
             InitializeComponent();
+            ParentForm = parentForm;
+
+
             this.TransparencyKey = BackColor;
             this.pen = new Pen(Color.Black, 3f);//画笔
             this.DoubleBuffered = true;
@@ -50,7 +56,7 @@ namespace HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows
                     };
                 }
             }
-            using ( pen = new Pen(Color.Black, 3f))
+            using (pen = new Pen(Color.Black, 3f))
             {
                 foreach (LineSegment line in strokes)
                 {
@@ -65,10 +71,10 @@ namespace HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows
                     }
                 }
             }
-          
+
         }
 
-        
+
 
         public void OpenDrawingBoard()
         {
@@ -82,7 +88,8 @@ namespace HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows
 
         public void ClearDrawingBoard()
         {
-
+            // 清空画板内容
+            this.gs.Clear(this.BackColor);
         }
 
         public void InitDrawingBoard()
@@ -91,8 +98,26 @@ namespace HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows
 
         private void DrawForm_Load(object sender, EventArgs e)
         {
-   
 
+        }
+
+        public void ReInitMenu()
+        {
+            Type type = ParentForm.GetType(); // 获取对象的类型
+            // 获取特定方法的信息
+            MethodInfo methodInfo = type.GetMethod("InitPluginMenu");
+
+            if (methodInfo != null && methodInfo.ReturnType == typeof(void))
+            {
+                if (ParentForm.InvokeRequired)
+                {
+                    ParentForm.Invoke((MethodInvoker)delegate
+                    {
+                        methodInfo.Invoke(ParentForm, null); // 调用方法
+                    });
+                }
+
+            }
         }
     }
 }

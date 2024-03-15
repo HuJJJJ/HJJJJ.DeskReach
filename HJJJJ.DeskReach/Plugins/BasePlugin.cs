@@ -9,29 +9,15 @@ using System.Text;
 
 namespace HJJJJ.DeskReach.Plugins
 {
-    public class BasePlugin
+    public abstract class BasePlugin
     {
-       public Client client;
+        public Client client;
+
 
 
         public virtual List<MenuItem> GetMenuItems(MenuPosition pos)
         {
-            //switch (pos)
-            //{
-            //    case MenuPosition.TopMenu:
-            //        {
-            //            return new MenuItem[]
-            //            {
-            //                new ButtonMenuItem() {Name = "高清" },
-            //                new ButtonMenuItem() {Name = "标清" },
-            //                new ButtonMenuItem() {Name = "流畅" },
-            //            };
-            //        }
-            //    case MenuPosition.Screen:
-            //        break;
-            //    case MenuPosition.ToolBar:
-            //        break;
-            //}
+
             return null;
         }
 
@@ -39,6 +25,11 @@ namespace HJJJJ.DeskReach.Plugins
         public virtual void RegInit(Client client)
         {
             this.client = client;
+        }
+
+        public virtual void UnregClient()
+        {
+            this.client = null;
         }
         /// <summary>
         /// 在接收到数据时发生
@@ -48,6 +39,22 @@ namespace HJJJJ.DeskReach.Plugins
 
         protected virtual void OnLoad(EventArgs e)
         {
+        }
+
+        /// <summary>
+        /// 禁用插件
+        /// </summary>
+        public virtual void DisablePlugin() 
+        {
+            
+        }
+
+        /// <summary>
+        /// 启用
+        /// </summary>
+        public virtual void EnablePlugin() 
+        {
+        
         }
 
 

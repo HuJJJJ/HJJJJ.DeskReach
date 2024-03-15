@@ -14,6 +14,16 @@ namespace HJJJJ.DeskReach.Plugins.Keyboard
         /// <summary>
         /// 组合
         /// </summary>
-        Combination
+        Combination,
+
+        /// <summary>
+        /// 禁用
+        /// </summary>
+        Disable,
+
+        /// <summary>
+        /// 启用
+        /// </summary>
+        Enable
     }
 }

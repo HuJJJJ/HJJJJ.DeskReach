@@ -14,8 +14,9 @@ namespace HJJJJ.DeskReach
         /// <param name="e"></param>
         private void Client_OnConnectionFailed(object sender, STTech.BytesIO.Core.ConnectionFailedEventArgs e)
         {
+            Role = ClientRoleType.None;
             Console.WriteLine("-----------------连接错误-----------------");
-            Console.WriteLine("错误码:"+e.ErrorCode);
+            Console.WriteLine("错误码:" + e.ErrorCode);
             Console.WriteLine("错误信息:" + e.Message);
             Console.WriteLine("错误类型:" + e.Exception.GetType().ToString());
         }
@@ -30,15 +31,18 @@ namespace HJJJJ.DeskReach
         private void Client_OnConnectedSuccessfully(object sender, STTech.BytesIO.Core.ConnectedSuccessfullyEventArgs e)
         {
             ///客户端主动连接，app为控制端
-            lock (ConnectLock)
-            {
-                if (Role == ClientRoleType.None)
-                {
-                    client.OnDataReceived += Client_OnDataReceived;
-                    Role = ClientRoleType.ControlEnd;
-                }
-            }
-            Client_OnConnectedSuccessfullyCallback?.Invoke();
+            client.OnDataReceived += Client_OnDataReceived;
+            Role = ClientRoleType.ControlEnd;
+        }
+
+        /// <summary>
+        /// 客户端断开连接
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Client_OnDisconnected(object sender, STTech.BytesIO.Core.DisconnectedEventArgs e)
+        {
+            Role = ClientRoleType.None;
         }
 
 
@@ -60,13 +64,22 @@ namespace HJJJJ.DeskReach
         /// <param name="e"></param>
         private void Server_ClientConnected(object sender, STTech.BytesIO.Tcp.Entity.ClientConnectedEventArgs e)
         {
-            ///服务端被动连接。app为受控端
-            if (Role == ClientRoleType.None)
+            e.Client.OnDataReceived += (object s, STTech.BytesIO.Core.DataReceivedEventArgs g) => unpacker.Input(g.Data);
+            e.Client.OnDisconnected += (object s, STTech.BytesIO.Core.DisconnectedEventArgs g) =>
             {
-                e.Client.OnDataReceived += (object s, STTech.BytesIO.Core.DataReceivedEventArgs g) => unpacker.Input(g.Data);
-                Role = ClientRoleType.ControlledEnd;
-            }
-            Server_OnConnectedSuccessfullyCallback?.Invoke();
+                Role = ClientRoleType.None;
+            };
+            Role = ClientRoleType.ControlledEnd;
+        }
+
+        /// <summary>
+        /// 服务器关闭
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Server_Closed(object sender, EventArgs e)
+        {
+            Role = ClientRoleType.None;
         }
 
         private void Client_OnDataReceived(object sender, STTech.BytesIO.Core.DataReceivedEventArgs e) => unpacker.Input(e.Data);

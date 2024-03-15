@@ -7,17 +7,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HJJJJ.DeskReach", "HJJJJ.De
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HJJJJ.DeskReach.Plugins.DrawingBoard.Windows", "HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows\HJJJJ.DeskReach.Plugins.DrawingBoard.Windows.csproj", "{814AA28E-EFD4-4112-A7C5-D5E562378CD1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HJJJJ.DeskReach.Demo", "HJJJJ.DeskReach.Demo\HJJJJ.DeskReach.Demo.csproj", "{903F998C-3F87-4EE3-B496-1208B9BFDA75}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HJJJJ.DeskReach.Plugins.TextMessage.Windows", "HJJJJ.DeskReach.Plugins.TextMessage.Windows\HJJJJ.DeskReach.Plugins.TextMessage.Windows.csproj", "{BFFE2CCB-8496-446D-BF66-156B5FD5A33A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HJJJJ.DeskReach.Plugins.Screen.Windows", "HJJJJ.DeskReach.Plugins.Screen.Windows\HJJJJ.DeskReach.Plugins.Screen.Windows.csproj", "{FAC48B1D-A672-49EC-9B7F-AC2DE0A79C2F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HJJJJ.DeskReach.Plugins.CommandPrompt.Windows", "HJJJJ.DeskReach.Plugins.CommandPrompt.Windows\HJJJJ.DeskReach.Plugins.CommandPrompt.Windows.csproj", "{B7E34F5D-C2B8-4099-898C-42FFEA28BEB3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFormsApp", "WindowsFormsApp\WindowsFormsApp.csproj", "{8F021694-C284-46B9-8CEB-3DCACC25142C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HJJJJ.DeskReach.Windows", "HJJJJ.DeskReach.Windows\HJJJJ.DeskReach.Windows.csproj", "{1CFA7586-3999-4B02-9AE4-FAD92D3FF728}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestWindowsFormsApp", "TestWindowsFormsApp\TestWindowsFormsApp.csproj", "{E66EE6C9-0507-432E-A6A9-40BA004AEB84}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HJJJJ.DeskReach.Plugins.FileTransfer.Windows", "HJJJJ.DeskReach.Plugins.FileTransfer.Windows\HJJJJ.DeskReach.Plugins.FileTransfer.Windows.csproj", "{1ED9E609-39ED-49B3-A8F2-2B9BB69BA8B0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApeFree.Protocol.ApeFtp", "..\..\.NET\ApeFree.Protocols\ApeFree.Protocol.ApeFtp\ApeFree.Protocol.ApeFtp.csproj", "{463CC4CE-03B5-41F3-BDAD-0C46F807A9B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,10 +33,6 @@ Global
 		{814AA28E-EFD4-4112-A7C5-D5E562378CD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{814AA28E-EFD4-4112-A7C5-D5E562378CD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{814AA28E-EFD4-4112-A7C5-D5E562378CD1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{903F998C-3F87-4EE3-B496-1208B9BFDA75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{903F998C-3F87-4EE3-B496-1208B9BFDA75}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{903F998C-3F87-4EE3-B496-1208B9BFDA75}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{903F998C-3F87-4EE3-B496-1208B9BFDA75}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BFFE2CCB-8496-446D-BF66-156B5FD5A33A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BFFE2CCB-8496-446D-BF66-156B5FD5A33A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BFFE2CCB-8496-446D-BF66-156B5FD5A33A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -49,14 +45,18 @@ Global
 		{B7E34F5D-C2B8-4099-898C-42FFEA28BEB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7E34F5D-C2B8-4099-898C-42FFEA28BEB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7E34F5D-C2B8-4099-898C-42FFEA28BEB3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8F021694-C284-46B9-8CEB-3DCACC25142C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8F021694-C284-46B9-8CEB-3DCACC25142C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8F021694-C284-46B9-8CEB-3DCACC25142C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8F021694-C284-46B9-8CEB-3DCACC25142C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E66EE6C9-0507-432E-A6A9-40BA004AEB84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E66EE6C9-0507-432E-A6A9-40BA004AEB84}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E66EE6C9-0507-432E-A6A9-40BA004AEB84}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E66EE6C9-0507-432E-A6A9-40BA004AEB84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CFA7586-3999-4B02-9AE4-FAD92D3FF728}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CFA7586-3999-4B02-9AE4-FAD92D3FF728}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CFA7586-3999-4B02-9AE4-FAD92D3FF728}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CFA7586-3999-4B02-9AE4-FAD92D3FF728}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1ED9E609-39ED-49B3-A8F2-2B9BB69BA8B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ED9E609-39ED-49B3-A8F2-2B9BB69BA8B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ED9E609-39ED-49B3-A8F2-2B9BB69BA8B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ED9E609-39ED-49B3-A8F2-2B9BB69BA8B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{463CC4CE-03B5-41F3-BDAD-0C46F807A9B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{463CC4CE-03B5-41F3-BDAD-0C46F807A9B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{463CC4CE-03B5-41F3-BDAD-0C46F807A9B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{463CC4CE-03B5-41F3-BDAD-0C46F807A9B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

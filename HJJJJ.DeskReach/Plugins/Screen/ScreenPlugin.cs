@@ -13,6 +13,8 @@ namespace HJJJJ.DeskReach.Plugins.Screen
     {
         private const string PluginName = "HJJJJ.DeskReach.Plugins.Screen.ScreenPlugin";
         private IScreenViewContext ViewContext { get; set; }
+        public  bool IsEnabled { get; set; }
+
         private new event EventHandler<byte[]> OnDataReceived;
         private AutoResetEvent AutoResetEvent = new AutoResetEvent(false);
         System.Timers.Timer timer = new System.Timers.Timer();
@@ -20,16 +22,16 @@ namespace HJJJJ.DeskReach.Plugins.Screen
         private object queueLock;
         private int frameCount = 0;
         private DateTime lastFrameTime;
-        private int Quality = 20;
 
-
+        private int Quality=50;
         public ScreenPlugin(IScreenViewContext viewContext)
         {
+            IsEnabled = true;
             ViewContext = viewContext;
             OnDataReceived += ScreenPlugin_OnDataReceived;
             frameQueue = new Queue<byte[]>();
             queueLock = new object();
-            timer.Interval = 1000 / 30;
+            timer.Interval = 1000 / 40;
             timer.Elapsed += SendFrame;
         }
 
@@ -101,7 +103,7 @@ namespace HJJJJ.DeskReach.Plugins.Screen
         {
             lock (queueLock)
             {
-                if (frameQueue.Count > 30)
+                if (frameQueue.Count > 10)
                 {
                     frameQueue.Clear();//清空队列
                 }
@@ -135,16 +137,22 @@ namespace HJJJJ.DeskReach.Plugins.Screen
         /// </summary>
         private void ProcessFrame(byte[] frame)
         {
-            // 解压缩
-            using (var inputStream = new MemoryStream(frame))
-            using (var gzipStream = new GZipStream(inputStream, CompressionMode.Decompress))
-            using (var outputStream = new MemoryStream())
+            try
             {
-                gzipStream.CopyTo(outputStream);
-                byte[] decompressed = outputStream.ToArray();  // 解压后的字节数组
-                ViewContext.ShowImage(decompressed);
+                // 解压缩
+                using (var inputStream = new MemoryStream(frame))
+                using (var gzipStream = new GZipStream(inputStream, CompressionMode.Decompress))
+                using (var outputStream = new MemoryStream())
+                {
+                    gzipStream.CopyTo(outputStream);
+                    byte[] decompressed = outputStream.ToArray();  // 解压后的字节数组
+                    ViewContext.ShowImage(decompressed);
+                }
             }
-
+            catch (Exception ex)
+            {
+                Console.WriteLine(  ex.Message);
+            }
             frameCount++;
             // 检查是否达到了三秒钟
             if (DateTime.Now - lastFrameTime >= TimeSpan.FromSeconds(1))

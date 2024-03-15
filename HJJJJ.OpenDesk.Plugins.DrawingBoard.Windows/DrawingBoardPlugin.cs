@@ -18,8 +18,11 @@ namespace HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows
         private IDrawingBoardViewContext ViewContext { get; set; }
         private new event EventHandler<byte[]> OnDataReceived;
         private AutoResetEvent AutoResetEvent = new AutoResetEvent(false);
+
+        public  bool IsEnabled { get; set; } 
         public DrawingBoardPlugin(IDrawingBoardViewContext viewContext)
         {
+            IsEnabled = true;
             ViewContext = viewContext;
             OnDataReceived += DrawingBoardPlugin_OnDataReceived;
             viewContext.InitDrawingBoard();
@@ -31,6 +34,7 @@ namespace HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows
         public override List<MenuItem> GetMenuItems(MenuPosition pos)
         {
             var menu = new List<MenuItem>();
+            if (!IsEnabled) return menu;
             switch (pos)
             {
                 case MenuPosition.TopMenu:
@@ -93,8 +97,7 @@ namespace HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows
         /// </summary>
         private void CloseBoard(object sender, EventArgs e)
         {
-            //修改当前为画画模式
-            client.IsDrawing = true;
+            client.IsDrawing = false;
             Action(new DrawingBoardPacket(DrawingBoardActionType.CloseDrawingBoard));
         }
 
@@ -103,7 +106,24 @@ namespace HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows
         /// </summary>
         private void ClearBoard(object sender, EventArgs e)
         {
+            Action(new DrawingBoardPacket(DrawingBoardActionType.ClearDrawingBoard));
+        }
 
+        /// <summary>
+        /// 启用插件
+        /// </summary>
+        public override void EnablePlugin()
+        {
+            Action(new DrawingBoardPacket(DrawingBoardActionType.Enable));
+        }
+
+        /// <summary>
+        /// 禁用插件
+        /// </summary>
+        public override void DisablePlugin()
+        {
+            IsEnabled = false;
+            Action(new DrawingBoardPacket(DrawingBoardActionType.Disable));
         }
 
         /// <summary>
@@ -132,6 +152,14 @@ namespace HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows
                     break;
                 case DrawingBoardActionType.ACK:
                     AutoResetEvent.Set();
+                    break;
+                case DrawingBoardActionType.Disable:
+                    this.IsEnabled = false;
+                    ViewContext.ReInitMenu();
+                    break;
+                case DrawingBoardActionType.Enable:
+                    this.IsEnabled = true;
+                    ViewContext.ReInitMenu();
                     break;
             }
         }

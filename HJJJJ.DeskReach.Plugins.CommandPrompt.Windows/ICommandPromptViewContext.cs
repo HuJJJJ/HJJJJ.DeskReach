@@ -24,5 +24,10 @@ namespace HJJJJ.DeskReach.Plugins.CommandPrompt.Windows
         /// 显示命令行输出
         /// </summary>
          void ShowCmdOutput(string data);
+
+        /// <summary>
+        /// 重新初始化界面
+        /// </summary>
+        void ReInitMenu();
     }
 }

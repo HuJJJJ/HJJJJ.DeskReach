@@ -10,6 +10,7 @@ namespace HJJJJ.DeskReach.Plugins.Screen
     /// </summary>
     public enum ScreenActionType
     {
+
         /// <summary>
         /// 图像帧
         /// </summary>
@@ -20,14 +21,24 @@ namespace HJJJJ.DeskReach.Plugins.Screen
         /// </summary>
         RequestImage,
 
-        /// <summary>
-        /// 修改图片质量
-        /// </summary>
+        ///修改图片质量
         ImageQuality,
 
         /// <summary>
         /// 图片确认帧
         /// </summary>
         ACK,
+
+        /// <summary>
+        /// 禁用
+        /// </summary>
+        Disable,
+
+        /// <summary>
+        /// 启用
+        /// </summary>
+        Enable
+
+
     }
 }

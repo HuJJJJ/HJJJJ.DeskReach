@@ -1,44 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO.Compression;
-using System.IO;
-using System.Text;
 using System.Threading;
 using System.Timers;
 using HJJJJ.DeskReach.Plugins.PluginMenu;
 using System.Drawing;
-using System.Diagnostics.Tracing;
 using System.Drawing.Imaging;
-using AForge.Video;
+using System.Linq;
+using HJJJJ.DeskReach.Plugins.Screen.Windows.Package;
+using System.Runtime.InteropServices;
+using static System.Net.Mime.MediaTypeNames;
+using System.Windows.Forms;
+using System.Collections;
 
 namespace HJJJJ.DeskReach.Plugins.Screen.Windows
 {
     public class ScreenPlugin : BasePlugin
     {
         private const string PluginName = "HJJJJ.DeskReach.Plugins.Screen.Windows.ScreenPlugin";
+
+        public bool IsEnabled { get; set; }
         private IScreenViewContext ViewContext { get; set; }
         private new event EventHandler<byte[]> OnDataReceived;
         private AutoResetEvent AutoResetEvent = new AutoResetEvent(false);
-        private Queue<byte[]> frameQueue;//接收队列
-        private object queueLock;
-        private int frameCount = 0;
-        private DateTime lastFrameTime;
-        private long Quality = 20;
-        private ScreenObserver screenObserver;
-        private EncoderParameters encoderParameters;
-       private ImageCodecInfo jpegEncoder;
+        private Queue<UpdateImageRequest> frameQueue;//接收队列
+        private object queueLock; //队列锁
+        private static object updateImage; //更新图片锁
+        private Bitmap newBitmap; //旧图片
+        private Bitmap oldBitmap;//新图片
+        private WindowsAPIScreenCapture screenCapture; //屏幕工具类
+        private System.Timers.Timer timer; //更新帧计时器
+        private long ImageFrameTimeStamp = 0;
         public ScreenPlugin(IScreenViewContext viewContext)
         {
-            //视频录制器
-            screenObserver = new ScreenObserver(viewContext.ScreenViewBounds, VideoSource_NewFrame);
+            IsEnabled = true;
             ViewContext = viewContext;
-            OnDataReceived += ScreenPlugin_OnDataReceived;
-            frameQueue = new Queue<byte[]>();
+            this.OnDataReceived += ScreenPlugin_OnDataReceived;
+            frameQueue = new Queue<UpdateImageRequest>();
             queueLock = new object();
-
-            //图片压缩器初始化
-             encoderParameters = new EncoderParameters(1);
-             jpegEncoder = screenObserver.GetEncoder(ImageFormat.Jpeg);
+            updateImage = new object();
+            timer = new System.Timers.Timer();
         }
 
 
@@ -46,24 +46,47 @@ namespace HJJJJ.DeskReach.Plugins.Screen.Windows
         public override void RegInit(Client client)
         {
             base.RegInit(client);
+
+            //初始化bitmap和截图工具
+            if (client.GetRole() == Entities.ClientRoleType.ControlledEnd) 
+            {
+                //一秒发送30帧
+                timer.Interval = 1000 / 30;
+                timer.Elapsed += SendFrame;
+                //获取缩放比例
+                screenCapture = new WindowsAPIScreenCapture();
+                var scalingFactor = screenCapture.GetScreenScalingFactor();
+                var width = Convert.ToInt32(ViewContext.ScreenViewBounds.Width * scalingFactor);
+                var height = Convert.ToInt32(ViewContext.ScreenViewBounds.Height * scalingFactor);
+                newBitmap = new Bitmap(width / 2, height / 2, PixelFormat.Format24bppRgb);
+                oldBitmap = new Bitmap(width / 2, height / 2, PixelFormat.Format24bppRgb);
+                screenCapture.Init(oldBitmap);
+            }
         }
         private void ScreenPlugin_OnDataReceived(object sender, byte[] e)
         {
-            var screen = new ScreenPacket(e);
-            switch (screen.Code)
+            var code = (ScreenActionType)e.First();
+
+            switch (code)
             {
-                case ScreenActionType.RequestImage:
-                    screenObserver.Start();
-                    break;
-                case ScreenActionType.ImageFrame:
-                    EnqueueFrame(screen.Image);
+                case ScreenActionType.UpdateImage:
+                    var updateImage = new UpdateImageRequest(e);
+                    EnqueueFrame(updateImage);
                     SendAck();
+                    break;
+                case ScreenActionType.RequestImageRequest:
+                    timer.Start();
+                    Action(new RequestImageResponse(newBitmap.Width, newBitmap.Height));
+                    break;
+                case ScreenActionType.RequestImageResponse:
+                    var response = new RequestImageResponse(e);
+                    newBitmap = new Bitmap(response.Width, response.Height, PixelFormat.Format24bppRgb);
+                    ViewContext.InitBitmap(response.Width, response.Height, PixelFormat.Format24bppRgb);
                     break;
                 case ScreenActionType.ACK:
                     AutoResetEvent.Set();
                     break;
-                case ScreenActionType.ImageQuality:
-                    Quality = screen.ImageQuality;
+                default:
                     break;
             }
         }
@@ -76,63 +99,40 @@ namespace HJJJJ.DeskReach.Plugins.Screen.Windows
         /// <param name="e"></param>
         /// 
         byte[] compressed;
-        private void SendFrame(byte[] bytes)
+        object obj = new object();
+        private void SendFrame(object sender, ElapsedEventArgs e)
         {
-            // 压缩
-            using (var outputStream = new MemoryStream())
+            screenCapture.CaptureScreen();
+            lock (obj)
             {
-                Console.WriteLine(bytes.Length);
-                using (var gzipStream = new GZipStream(outputStream, CompressionMode.Compress))
-                    gzipStream.Write(bytes, 0, bytes.Length);
-                compressed = outputStream.ToArray();  // 压缩后的字节数组
-            }
-            Action(new ScreenPacket(ScreenActionType.ImageFrame, compressed));
-            AutoResetEvent.WaitOne();
-        }
-
-
-        /// <summary>
-        /// 每一帧的处理
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void VideoSource_NewFrame(object sender, NewFrameEventArgs eventArgs)
-        {
-            var image = (Bitmap)eventArgs.Frame.Clone();
-            encoderParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, Quality); ;
-
-            if (jpegEncoder != null)
-            {
-                using (MemoryStream ms = new MemoryStream())
+                int heightBlockSize = oldBitmap.Height / 10;
+                long timeStamp = new DateTimeOffset(DateTime.Now).ToUnixTimeMilliseconds();
+                for (int y = 0; y < oldBitmap.Height; y += heightBlockSize)
                 {
-                    image.Save(ms, jpegEncoder, encoderParameters);
-                    image.Dispose();
-                    SendFrame(ms.ToArray());
+                    var rectangle = new Rectangle(0, y, oldBitmap.Width, heightBlockSize);
+                    var bytes = BitmapMemoryIO.ReadBitmapBlock(oldBitmap, rectangle);
+                    var result = BitmapMemoryIO.CompareDifference(newBitmap, rectangle, bytes);
+                    if (result) continue;
+                    BitmapMemoryIO.WriteBitmapBlock(newBitmap, rectangle, bytes);
+                    Action(new UpdateImageRequest(0, y, bytes, heightBlockSize, oldBitmap.Width, timeStamp));
                 }
             }
-            else
-            {
-                Console.WriteLine("JPEG 编码器无法找到");
-            }
+
+            //// 压缩
+            //using (var outputStream = new MemoryStream())
+            //{
+            //    Console.WriteLine(bytes.Length);
+            //    using (var gzipStream = new GZipStream(outputStream, CompressionMode.Compress))
+            //        gzipStream.Write(bytes, 0, bytes.Length);
+            //    compressed = outputStream.ToArray();  // 压缩后的字节数组
+            //}
+            //Action(new ScreenPacket(ScreenActionType.ImageFrame, compressed));
+            //AutoResetEvent.WaitOne();
+
         }
 
-        ///// <summary>
-        ///// 每一帧的处理
-        ///// </summary>
-        ///// <param name="sender"></param>
-        ///// <param name="e"></param>
-        //private void VideoStreamer_NewFrame(object sender, NewFrameEventArgs e)
-        //{
-        //    var bitmap = (Bitmap)e.Frame.Clone();
-        //    var image = bitmap.GetThumbnailImage(bitmap.Width / 2, bitmap.Height / 2, null, IntPtr.Zero);
-        //    bitmap.Dispose();
-        //    using (MemoryStream ms = new MemoryStream())
-        //    {
-        //        image.Save(ms, ImageFormat.Jpeg);
-        //        image.Dispose();
-        //        SendFrame(ms.ToArray());
-        //    }
-        //}
+
+
 
         /// <summary>
         /// 启动接收图片线程
@@ -147,14 +147,14 @@ namespace HJJJJ.DeskReach.Plugins.Screen.Windows
         /// 将接收到的帧放入队列并返回确认帧
         /// </summary>
         /// <param name="frame"></param>
-        public void EnqueueFrame(byte[] frame)
+        public void EnqueueFrame(UpdateImageRequest frame)
         {
             lock (queueLock)
             {
-                if (frameQueue.Count > 30)
-                {
-                    frameQueue.Clear();//清空队列
-                }
+                //if (frameQueue.Count > 30)
+                //{
+                //    frameQueue.Clear();//清空队列
+                //}
                 frameQueue.Enqueue(frame);
                 Monitor.Pulse(queueLock);
             }
@@ -165,7 +165,8 @@ namespace HJJJJ.DeskReach.Plugins.Screen.Windows
         /// </summary>
         private void ProcessingFramesThread()
         {
-            byte[] frame;
+            //UpdateImageRequest frame = null;
+            List<UpdateImageRequest> list = new List<UpdateImageRequest>();
             while (true)
             {
                 lock (queueLock)
@@ -174,41 +175,52 @@ namespace HJJJJ.DeskReach.Plugins.Screen.Windows
                     {
                         Monitor.Wait(queueLock);
                     }
-                    frame = frameQueue.Dequeue();
+
+                    while (frameQueue.Count > 0)
+                        list.Add(frameQueue.Dequeue());
+                    // frame = frameQueue.Dequeue();
                 }
-                ProcessFrame(frame);
+                ProcessFrame(list);
+                list.Clear();
                 // SendAck();
             }
         }
+
+
         /// <summary>
         /// 处理接收到的图片
         /// </summary>
-        private void ProcessFrame(byte[] frame)
+        private void ProcessFrame(List<UpdateImageRequest> frameList)
         {
-            // 解压缩
-            using (var inputStream = new MemoryStream(frame))
-            using (var gzipStream = new GZipStream(inputStream, CompressionMode.Decompress))
-            using (var outputStream = new MemoryStream())
+            IOrderedEnumerable<UpdateImageRequest> groupedObjects = null;
+            //如果当前没有更新的帧，则取出队列中时间戳最接近现在的帧组
+      
+                groupedObjects = frameList.GroupBy(obj => obj.TimeStamp)
+                                         .OrderByDescending(group => group.Key)
+                                         .Select(group => group.OrderBy(obj => obj.TimeStamp)).First();
+            lock (updateImage)
             {
-                gzipStream.CopyTo(outputStream);
-                byte[] decompressed = outputStream.ToArray();  // 解压后的字节数组
-                ViewContext.ShowImage(decompressed);
+                foreach (var image in groupedObjects)
+                {
+                    BitmapMemoryIO.WriteBitmapBlock(newBitmap, new Rectangle(image.StartX, image.StartY, image.WidthBlockSize, image.HeightBlockSize), image.Image);
+                    ViewContext.ShowImage((Bitmap)newBitmap.Clone());
+                }
             }
 
-            frameCount++;
-            // 检查是否达到了三秒钟
-            if (DateTime.Now - lastFrameTime >= TimeSpan.FromSeconds(1))
-            {
-                // 显示帧率并重置帧数和计时器
-                Console.WriteLine($"接收端FPS: {frameCount}");
-                frameCount = 0;
-                lastFrameTime = DateTime.Now;
-            }
+            //// 解压缩
+            //using (var inputStream = new MemoryStream(frame))
+            //using (var gzipStream = new GZipStream(inputStream, CompressionMode.Decompress))
+            //using (var outputStream = new MemoryStream())
+            //{
+            //    gzipStream.CopyTo(outputStream);
+            //    byte[] decompressed = outputStream.ToArray();  // 解压后的字节数组
+            //    ViewContext.ShowImage(decompressed);
+            //}
         }
 
-        public override List<MenuItem> GetMenuItems(MenuPosition pos)
+        public override List<PluginMenu.MenuItem> GetMenuItems(MenuPosition pos)
         {
-            var menu = new List<MenuItem>();
+            var menu = new List<PluginMenu.MenuItem>();
             switch (pos)
             {
                 case MenuPosition.TopMenu:
@@ -218,42 +230,6 @@ namespace HJJJJ.DeskReach.Plugins.Screen.Windows
                 case MenuPosition.ToolBar:
                     break;
                 case MenuPosition.ToolMenu:
-                    menu.AddRange(new MenuItem[] {new ComboBoxMenuItem()
-                    {
-                        Name = "视频质量",
-                        Enable = true,
-                        Items = new object[] { "Speed", "Low", "Nomal", "High", "Quality" },
-                        OnIndexChanged = new Action<MenuItem,ComboBoxSelectedEvnetArgs>((sender,e) =>
-                        {
-                            int quality = 0;
-                            switch (e.Text)
-                            {
-                                case "Speed":
-                                    quality = 0;
-                                    break;
-                                case "Low":
-                                    quality = 20;
-                                    break;
-                                case "Nomal":
-                                    quality = 50;
-                                    break;
-                                case "High":
-                                    quality = 80;
-                                    break;
-                                case "Quality":
-                                    quality = 100;
-                                    break;
-                            }
-                            Action(new ScreenPacket(ScreenActionType.ImageQuality, null, quality));
-                        })
-                    },
-                    new LabelMenuItem()
-                    {
-                    Name ="视频质量",
-                    Enable =false,
-                    FontColor = Color.Gray
-                    } }
-                    );
                     break;
                 case MenuPosition.StatusMenu:
                     break;
@@ -261,7 +237,7 @@ namespace HJJJJ.DeskReach.Plugins.Screen.Windows
             return menu;
         }
 
-        private void SendAck() => Action(new ScreenPacket(ScreenActionType.ACK));
+        private void SendAck() => Action(new ACKRequest());
 
         public void Action(ScreenPacket packet) => Send(packet);
 

@@ -26,6 +26,16 @@ namespace HJJJJ.DeskReach.Plugins.CommandPrompt.Windows
         /// <summary>
         /// 关闭命令行窗口
         /// </summary>
-        End
+        End,
+
+        /// <summary>
+        /// 禁用
+        /// </summary>
+        Disable,
+
+        /// <summary>
+        /// 启用
+        /// </summary>
+        Enable
     }
 }

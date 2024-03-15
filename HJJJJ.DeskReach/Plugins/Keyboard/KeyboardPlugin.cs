@@ -9,9 +9,10 @@ namespace HJJJJ.DeskReach.Plugins.Keyboard
     {
         private IKeyboardViewContext ViewContext { get; set; }
         private new event EventHandler<byte[]> OnDataReceived;
-
+        public bool IsEnabled { get; set; }
         public KeyboardPlugin(IKeyboardViewContext viewContext)
         {
+            IsEnabled = true;
             ViewContext = viewContext;
             OnDataReceived += KeyboardPlugin_OnDataReceived;
         }
@@ -35,6 +36,7 @@ namespace HJJJJ.DeskReach.Plugins.Keyboard
             switch (data.Code)
             {
                 case KeyboardActionType.Single:
+                    Console.WriteLine(client.client.Port);
                     ViewContext.SendKey(data.KeyChars);
                     break;
                 case KeyboardActionType.Combination:
@@ -43,17 +45,12 @@ namespace HJJJJ.DeskReach.Plugins.Keyboard
         }
 
 
-
+        
         /// <summary>
         /// 操作键盘
         /// </summary>
         public void Action(KeyboardPacket packet) => Send(packet);
 
 
-
-        public void SendKey(string keyChar)
-        {
-            ViewContext.SendKey(keyChar);
-        }
     }
 }

@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1CFA7586-3999-4B02-9AE4-FAD92D3FF728}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>HJJJJ.DeskReach.Windows</RootNamespace>
+    <AssemblyName>HJJJJ.DeskReach.Windows</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BitmapExtendsion.cs" />
+    <Compile Include="CMDControlForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CMDControlForm.Designer.cs">
+      <DependentUpon>CMDControlForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CustomControl\ClosableTabControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CustomControl\ClosableTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FileTransferForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FileTransferForm.Designer.cs">
+      <DependentUpon>FileTransferForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainFrom.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainFrom.Designer.cs">
+      <DependentUpon>MainFrom.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainFrom.Event.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MasterForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MasterForm.Designer.cs">
+      <DependentUpon>MasterForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MasterForm.DrawingBoard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SlaveForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SlaveForm.Designer.cs">
+      <DependentUpon>SlaveForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WindowsAPIScreenCapture.cs" />
+    <EmbeddedResource Include="FileTransferForm.resx">
+      <DependentUpon>FileTransferForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainFrom.resx">
+      <DependentUpon>MainFrom.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MasterForm.resx">
+      <DependentUpon>MasterForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="SlaveForm.resx">
+      <DependentUpon>SlaveForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HJJJJ.DeskReach.Plugins.CommandPrompt.Windows\HJJJJ.DeskReach.Plugins.CommandPrompt.Windows.csproj">
+      <Project>{b7e34f5d-c2b8-4099-898c-42ffea28beb3}</Project>
+      <Name>HJJJJ.DeskReach.Plugins.CommandPrompt.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HJJJJ.DeskReach.Plugins.FileTransfer.Windows\HJJJJ.DeskReach.Plugins.FileTransfer.Windows.csproj">
+      <Project>{1ED9E609-39ED-49B3-A8F2-2B9BB69BA8B0}</Project>
+      <Name>HJJJJ.DeskReach.Plugins.FileTransfer.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HJJJJ.DeskReach.Plugins.Screen.Windows\HJJJJ.DeskReach.Plugins.Screen.Windows.csproj">
+      <Project>{fac48b1d-a672-49ec-9b7f-ac2de0a79c2f}</Project>
+      <Name>HJJJJ.DeskReach.Plugins.Screen.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HJJJJ.DeskReach.Plugins.TextMessage.Windows\HJJJJ.DeskReach.Plugins.TextMessage.Windows.csproj">
+      <Project>{bffe2ccb-8496-446d-bf66-156b5fd5a33a}</Project>
+      <Name>HJJJJ.DeskReach.Plugins.TextMessage.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HJJJJ.DeskReach\HJJJJ.DeskReach.csproj">
+      <Project>{2e704b6a-fd38-4fc1-aa32-ba6905a0fcc8}</Project>
+      <Name>HJJJJ.DeskReach</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows\HJJJJ.DeskReach.Plugins.DrawingBoard.Windows.csproj">
+      <Project>{814aa28e-efd4-4112-a7c5-d5e562378cd1}</Project>
+      <Name>HJJJJ.DeskReach.Plugins.DrawingBoard.Windows</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ApeFree.ApeForms.Forms">
+      <Version>0.11.3</Version>
+    </PackageReference>
+    <PackageReference Include="FreeImageNET">
+      <Version>3.17.1</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications">
+      <Version>7.1.3</Version>
+    </PackageReference>
+    <PackageReference Include="STTech.BytesIO.Tcp">
+      <Version>2.14.5.1</Version>
+    </PackageReference>
+    <PackageReference Include="STTech.CodePlus">
+      <Version>1.6.5.1</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

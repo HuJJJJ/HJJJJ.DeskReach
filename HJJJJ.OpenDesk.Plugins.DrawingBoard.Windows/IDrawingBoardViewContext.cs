@@ -36,6 +36,9 @@ namespace HJJJJ.OpenDesk.Plugins.DrawingBoard.Windows
         /// <param name="lines"></param>
         void Drawing(List<LineSegment> lines);
 
-
+        /// <summary>
+        /// 重新初始化界面
+        /// </summary>
+        void ReInitMenu();
     }
 }

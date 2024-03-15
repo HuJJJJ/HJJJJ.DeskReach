@@ -10,12 +10,29 @@ namespace HJJJJ.DeskReach
     {
         public PackageUnpacker()
         {
-
+            StartMark = BasePackage.PackageHeadTag;
         }
-        protected override int CalculatePacketLength(IEnumerable<byte> bytes)
+
+
+        protected override int CalculatePacketLength(byte[] bytes)
         {
-            var data = bytes.ToList();
-            return BitConverter.ToInt32(bytes.ToArray(), 0);
+            try
+            {
+                var len = BitConverter.ToInt32(bytes, 4);
+                if (len < 0)
+                {
+                    this.ClearCache();
+                    return 0;
+                }
+                return len;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                this.ClearCache();
+                return 0;
+            }
+           
         }
     }
 }

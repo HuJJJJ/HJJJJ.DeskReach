@@ -11,10 +11,12 @@ namespace HJJJJ.DeskReach.Plugins.TextMessage.Windows
     {
         private ITextMessageViewContext ViewContext { get; set; }
 
+        public  bool IsEnabled { get; set; } 
 
         public new event EventHandler<byte[]> OnDataReceived;
         public TextMessagePlugin(ITextMessageViewContext viewContext)
         {
+            IsEnabled = true;
             ViewContext = viewContext;
             this.OnDataReceived += TextMessagePlugin_OnDataReceived;
         }

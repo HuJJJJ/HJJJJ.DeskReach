@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -15,10 +16,12 @@ namespace HJJJJ.DeskReach.Plugins.CommandPrompt.Windows
     {
         private Client client;
         private CommandPromptPlugin cmd;
-        public CMDForm(Client _client)
+        private new Form ParentForm;
+        public CMDForm(Client _client, Form parentForm)
         {
             InitializeComponent();
             ///初始化客户端，初始化插件
+            ParentForm = parentForm;
             client = _client;
             cmd = new CommandPromptPlugin(this);
             client.RegPlugin(cmd);
@@ -46,9 +49,9 @@ namespace HJJJJ.DeskReach.Plugins.CommandPrompt.Windows
                 var str = richTextBox.Lines[richTextBox.Lines.Length - 1];
                 var tempArr = str.Split('>');
                 var command = "";
-                if (tempArr.Length==1)
+                if (tempArr.Length == 1)
                     command = tempArr[0];
-                else if (tempArr.Length==2)
+                else if (tempArr.Length == 2)
                     command = tempArr[1];
                 if (command == "") command = str;
                 cmd.Action(new CommandPromptPacket(CommandPromptActionType.Input, command));
@@ -66,5 +69,26 @@ namespace HJJJJ.DeskReach.Plugins.CommandPrompt.Windows
             this.Hide();
             return;
         }
+
+        public void ReInitMenu() 
+        {
+            Type type = ParentForm.GetType(); // 获取对象的类型
+            // 获取特定方法的信息
+            MethodInfo methodInfo = type.GetMethod("InitPluginMenu");
+
+            if (methodInfo != null && methodInfo.ReturnType == typeof(void))
+            {
+                if (ParentForm.InvokeRequired)
+                {
+                    ParentForm.Invoke((MethodInvoker)delegate
+                    {
+                        methodInfo.Invoke(ParentForm, null); // 调用方法
+                    });
+                }
+              
+            }
+        }
+
+     
     }
 }

@@ -16,8 +16,10 @@ namespace HJJJJ.DeskReach.Plugins.CommandPrompt.Windows
 
         private Command command = new Command();
         public new event EventHandler<byte[]> OnDataReceived;
+        public bool IsEnabled { get; set; } 
         public CommandPromptPlugin(ICommandPromptViewContext viewContext)
         {
+            IsEnabled = true;
             ViewContext = viewContext;
             this.OnDataReceived += CommandPromptPlugin_OnDataReceived; ;
         }
@@ -32,10 +34,32 @@ namespace HJJJJ.DeskReach.Plugins.CommandPrompt.Windows
             base.RegInit(client);
         }
 
+        /// <summary>
+        /// 启用插件
+        /// </summary>
+        public override void EnablePlugin()
+        {
+            Action(new CommandPromptPacket(CommandPromptActionType.Enable));
+        }
 
+        /// <summary>
+        /// 禁用插件
+        /// </summary>
+        public override void DisablePlugin()
+        {
+            IsEnabled = false;
+            Action(new CommandPromptPacket(CommandPromptActionType.Disable));
+        }
+
+        public void OpenCmd() 
+        {
+            ViewContext.ShowCmd();
+        }
         public override List<PluginMenu.MenuItem> GetMenuItems(MenuPosition pos)
         {
             var menu = new List<PluginMenu.MenuItem>();
+            if (!this.IsEnabled) return menu;
+        
             switch (pos)
             {
                 case MenuPosition.TopMenu:
@@ -56,9 +80,8 @@ namespace HJJJJ.DeskReach.Plugins.CommandPrompt.Windows
                         })
                     });
                     break;
-                   
             }
-                    return menu;
+            return menu;
         }
         private void CommandPromptPlugin_OnDataReceived(object sender, byte[] e)
         {
@@ -79,6 +102,14 @@ namespace HJJJJ.DeskReach.Plugins.CommandPrompt.Windows
                 case CommandPromptActionType.End:
                     command.Stop();
                     ViewContext.HideCmd();
+                    break;
+                case CommandPromptActionType.Disable:
+                    this.IsEnabled = false;
+                    ViewContext.ReInitMenu();
+                    break;
+                case CommandPromptActionType.Enable:
+                    this.IsEnabled = true;
+                    ViewContext.ReInitMenu();
                     break;
             }
         }
