@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.6.33829.357
+# Visual Studio Version 18
+VisualStudioVersion = 18.5.11612.153 insiders
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HJJJJ.DeskReach", "HJJJJ.DeskReach\HJJJJ.DeskReach.csproj", "{2E704B6A-FD38-4FC1-AA32-BA6905A0FCC8}"
 EndProject
@@ -16,8 +16,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HJJJJ.DeskReach.Windows", "HJJJJ.DeskReach.Windows\HJJJJ.DeskReach.Windows.csproj", "{1CFA7586-3999-4B02-9AE4-FAD92D3FF728}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HJJJJ.DeskReach.Plugins.FileTransfer.Windows", "HJJJJ.DeskReach.Plugins.FileTransfer.Windows\HJJJJ.DeskReach.Plugins.FileTransfer.Windows.csproj", "{1ED9E609-39ED-49B3-A8F2-2B9BB69BA8B0}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApeFree.Protocol.ApeFtp", "..\..\.NET\ApeFree.Protocols\ApeFree.Protocol.ApeFtp\ApeFree.Protocol.ApeFtp.csproj", "{463CC4CE-03B5-41F3-BDAD-0C46F807A9B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,10 +51,6 @@ Global
 		{1ED9E609-39ED-49B3-A8F2-2B9BB69BA8B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1ED9E609-39ED-49B3-A8F2-2B9BB69BA8B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1ED9E609-39ED-49B3-A8F2-2B9BB69BA8B0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{463CC4CE-03B5-41F3-BDAD-0C46F807A9B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{463CC4CE-03B5-41F3-BDAD-0C46F807A9B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{463CC4CE-03B5-41F3-BDAD-0C46F807A9B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{463CC4CE-03B5-41F3-BDAD-0C46F807A9B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -33,6 +33,12 @@ namespace HJJJJ.DeskReach.Windows
         private CommandPromptPlugin command;
         private FileTransferPlugin fileTransfer;
         private ConnectionType ConnectionMode;
+        private readonly WindowsAPIScreenCapture screenCapture = new WindowsAPIScreenCapture();
+        private readonly ScreenFrameDecoder screenDecoder = new ScreenFrameDecoder();
+        private readonly object screenImageLock = new object();
+        private Bitmap pendingScreenImage;
+        private bool screenImagePosted;
+        private volatile bool screenResourcesDisposed;
 
         public Rectangle PointerViewBounds { get; set; }
         public Rectangle ScreenViewBounds { get; set; }
@@ -86,15 +92,22 @@ namespace HJJJJ.DeskReach.Windows
         {
             //视频显示框
             pictureBox.Dock = DockStyle.Fill;
-            pictureBox.SizeMode = PictureBoxSizeMode.AutoSize;
+            // 保留收到的完整图像，交给控件按可视区域等比例绘制；静止桌面也能随窗口缩放。
+            pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox.AllowDrop = true;
             pictureBox.BringToFront();
 
             //界面的鼠标控制事件
-            MouseEventHandler mouseMove = (object sender, MouseEventArgs e) => pointer.Action(new PointerPacket(new Point() { X = e.X * 100 / pictureBox.Width, Y = e.Y * 100 / pictureBox.Height }, PointerActionType.Move));
+            MouseEventHandler mouseMove = (object sender, MouseEventArgs e) =>
+            {
+                if (ConnectionMode == ConnectionType.Control && !client.IsDrawing &&
+                    TryGetRemotePoint(e.Location, out Point point, true))
+                    pointer.Action(new PointerPacket(point, PointerActionType.Move));
+            };
             pictureBox.MouseDown += (object sender, MouseEventArgs e) =>
             {
-                if (!client.IsDrawing)
+                if (ConnectionMode == ConnectionType.Control && !client.IsDrawing &&
+                    TryGetRemotePoint(e.Location, out Point point))
                 {
                     PointerActionType type = PointerActionType.None;
                     switch (e.Button)
@@ -122,12 +135,13 @@ namespace HJJJJ.DeskReach.Windows
                             type = PointerActionType.None;
                             break;
                     }
-                    pointer.Action(new PointerPacket(new Point() { X = e.X * 100 / pictureBox.Width, Y = e.Y * 100 / pictureBox.Height }, type));
+                    pointer.Action(new PointerPacket(point, type));
                 }
             }; ;
             pictureBox.MouseUp += (object sender, MouseEventArgs e) =>
             {
-                if (!client.IsDrawing)
+                if (ConnectionMode == ConnectionType.Control && !client.IsDrawing &&
+                    TryGetRemotePoint(e.Location, out Point point, true))
                 {
                     PointerActionType type = PointerActionType.None;
                     switch (e.Button)
@@ -155,12 +169,13 @@ namespace HJJJJ.DeskReach.Windows
                             type = PointerActionType.None;
                             break;
                     }
-                    pointer.Action(new PointerPacket(new Point() { X = e.X * 100 / pictureBox.Width, Y = e.Y * 100 / pictureBox.Height }, type));
+                    pointer.Action(new PointerPacket(point, type));
                 }
             }; ;
             pictureBox.MouseDoubleClick += (object sender, MouseEventArgs e) =>
             {
-                if (!client.IsDrawing)
+                if (ConnectionMode == ConnectionType.Control && !client.IsDrawing &&
+                    TryGetRemotePoint(e.Location, out Point point))
                 {
                     PointerActionType type = PointerActionType.None;
                     switch (e.Button)
@@ -185,11 +200,16 @@ namespace HJJJJ.DeskReach.Windows
                             type = PointerActionType.None;
                             break;
                     }
-                    pointer.Action(new PointerPacket(new Point() { X = e.X * 100 / pictureBox.Width, Y = e.Y * 100 / pictureBox.Height }, type));
+                    pointer.Action(new PointerPacket(point, type));
                 }
 
             }; ;
-            pictureBox.MouseWheel += (object sender, MouseEventArgs e) => { if (!client.IsDrawing) pointer.Action(new PointerPacket(new Point() { X = e.X * 100 / pictureBox.Width, Y = e.Y * 100 / pictureBox.Height }, PointerActionType.MiddleWheel, e.Delta)); };
+            pictureBox.MouseWheel += (object sender, MouseEventArgs e) =>
+            {
+                if (ConnectionMode == ConnectionType.Control && !client.IsDrawing &&
+                    TryGetRemotePoint(e.Location, out Point point))
+                    pointer.Action(new PointerPacket(point, PointerActionType.MiddleWheel, e.Delta));
+            };
             //picbox加入画板功能
             pictureBox.MouseDown += new MouseEventHandler(TransparentPanel_MouseDown);
             pictureBox.MouseMove += new MouseEventHandler(OnMouseMove);
@@ -198,21 +218,22 @@ namespace HJJJJ.DeskReach.Windows
             //picbox文件拖拽功能
             pictureBox.DragEnter += (s, e) =>
             {
-                if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                if (ConnectionMode == ConnectionType.Control && e.Data.GetDataPresent(DataFormats.FileDrop))
                     e.Effect = DragDropEffects.Copy;
             };
             pictureBox.DragDrop += (s, e) =>
             {
+                if (ConnectionMode != ConnectionType.Control || !TryGetRemotePoint(
+                    pictureBox.PointToClient(new Point(e.X, e.Y)), out Point remotePoint)) return;
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 // 对拖放的文件进行处理
                 for (int i = 0; i < files.Length; i++)
                 {
                     if (File.Exists(files[i]))
                     {
-                        Point relativePoint = pictureBox.PointToClient(new Point(e.X, e.Y));
                         // 处理文件
-                        pointer.Action(new PointerPacket(new Point() { X = relativePoint.X * 100 / pictureBox.Width, Y = relativePoint.Y * 100 / pictureBox.Height }, PointerActionType.LeftDown));
-                        pointer.Action(new PointerPacket(new Point() { X = relativePoint.X * 100 / pictureBox.Width, Y = relativePoint.Y * 100 / pictureBox.Height }, PointerActionType.LeftUp));
+                        pointer.Action(new PointerPacket(remotePoint, PointerActionType.LeftDown));
+                        pointer.Action(new PointerPacket(remotePoint, PointerActionType.LeftUp));
                         fileTransfer.SendFile(files[i]);
                     }
                     else if (Directory.Exists(files[i]))
@@ -239,7 +260,27 @@ namespace HJJJJ.DeskReach.Windows
             InitPluginMenu();
         }
 
+        // 与 PictureBox.Zoom 的居中缩放规则一致，鼠标和画板均按真实画面区域换算。
+        private Rectangle GetDisplayedImageBounds()
+        {
+            var image = pictureBox.Image;
+            var viewport = pictureBox.ClientSize;
+            if (image == null || viewport.Width <= 0 || viewport.Height <= 0) return Rectangle.Empty;
+            float scale = Math.Min((float)viewport.Width / image.Width, (float)viewport.Height / image.Height);
+            int width = (int)(image.Width * scale), height = (int)(image.Height * scale);
+            return new Rectangle((viewport.Width - width) / 2, (viewport.Height - height) / 2, width, height);
+        }
 
+        private bool TryGetRemotePoint(Point location, out Point point, bool clampOutside = false)
+        {
+            point = Point.Empty;
+            var bounds = GetDisplayedImageBounds();
+            if (bounds.Width <= 0 || bounds.Height <= 0 || (!clampOutside && !bounds.Contains(location))) return false;
+            int x = Math.Max(0, Math.Min(bounds.Width - 1, location.X - bounds.Left));
+            int y = Math.Max(0, Math.Min(bounds.Height - 1, location.Y - bounds.Top));
+            point = new Point(x * 100 / bounds.Width, y * 100 / bounds.Height);
+            return true;
+        }
 
         public void InitPluginMenu()
         {
@@ -277,7 +318,7 @@ namespace HJJJJ.DeskReach.Windows
                 var comboBox = new ToolStripComboBox();
                 comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
                 comboBox.Items.AddRange(comboBoxItem.Items);
-                comboBox.SelectedIndex = 0;
+                comboBox.SelectedIndex = 2; // Nomal 对应发送端默认质量 50。
                 comboBox.SelectedIndexChanged += (object sender, EventArgs e) =>
                 {
                     ToolStripComboBox item = (ToolStripComboBox)sender;
@@ -385,7 +426,7 @@ namespace HJJJJ.DeskReach.Windows
         /// <returns></returns>
         public byte[] GetImage(int quality)
         {
-            var sendFrame = WindowsAPIScreenCapture.CaptureScreen(quality);
+            var sendFrame = screenCapture.CaptureUpdate(quality);
             return sendFrame;
         }
 
@@ -395,10 +436,80 @@ namespace HJJJJ.DeskReach.Windows
         /// <param name="image"></param>
         public void ShowImage(byte[] image)
         {
-            var tempFrame = image.ToBitmap();
-            int targetWidth = this.pictureBox.Width;
-            int targetHeight = (int)((float)tempFrame.Height / tempFrame.Width * targetWidth);
-            this.pictureBox.Image = tempFrame.GetThumbnailImage(targetWidth, targetHeight, null, IntPtr.Zero);
+            if (screenResourcesDisposed) return;
+            try
+            {
+                var completeImage = screenDecoder.Apply(image);
+                if (completeImage != null) QueueScreenImage(completeImage);
+            }
+            catch (ObjectDisposedException) when (screenResourcesDisposed) { }
+        }
+
+        public void RequestKeyFrame() => screenCapture.RequestKeyFrame();
+
+        private void QueueScreenImage(Bitmap image)
+        {
+            lock (screenImageLock)
+            {
+                if (screenResourcesDisposed)
+                {
+                    image.Dispose();
+                    return;
+                }
+                // UI 忙时也只保留最新图片，不能让 BeginInvoke 再堆出一个旧帧队列。
+                pendingScreenImage?.Dispose();
+                pendingScreenImage = image;
+                if (screenImagePosted) return;
+                screenImagePosted = true;
+            }
+            try { BeginInvoke(new MethodInvoker(DisplayPendingScreenImage)); }
+            catch (InvalidOperationException)
+            {
+                lock (screenImageLock)
+                {
+                    pendingScreenImage?.Dispose();
+                    pendingScreenImage = null;
+                    screenImagePosted = false;
+                }
+            }
+        }
+
+        private void DisplayPendingScreenImage()
+        {
+            Bitmap image;
+            lock (screenImageLock)
+            {
+                image = pendingScreenImage;
+                pendingScreenImage = null;
+                screenImagePosted = false;
+                if (screenResourcesDisposed) { image?.Dispose(); return; }
+            }
+            if (image == null) return;
+            var previous = pictureBox.Image;
+            pictureBox.Image = image;
+            previous?.Dispose();
+        }
+
+        private void DisposeScreenResources()
+        {
+            lock (screenImageLock)
+            {
+                if (screenResourcesDisposed) return;
+                screenResourcesDisposed = true;
+                pendingScreenImage?.Dispose();
+                pendingScreenImage = null;
+            }
+            screen?.Dispose();
+            screenDecoder.Dispose();
+            screenCapture.Dispose();
+            if (pictureBox != null)
+            {
+                var previous = pictureBox.Image;
+                pictureBox.Image = null;
+                previous?.Dispose();
+            }
+            bitmap?.Dispose();
+            bitmap = null;
         }
 
         private Bitmap bitmap;
@@ -420,7 +531,7 @@ namespace HJJJJ.DeskReach.Windows
             //Marshal.Copy(bytes, 0, bitmapData.Scan0, bytes.Length);
             //newBitmap.UnlockBits(newBitmapData);
             //bitmap.UnlockBits(bitmapData);
-            this.pictureBox.Image = newBitmap;
+            QueueScreenImage(newBitmap);
 
         }
 

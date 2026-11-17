@@ -37,7 +37,10 @@ namespace HJJJJ.DeskReach.Plugins.Screen
         /// <summary>
         /// 启用
         /// </summary>
-        Enable
+        Enable,
+
+        /// <summary>差量基准缺失或接收失败时请求完整关键帧。</summary>
+        RequestKeyFrame
 
 
     }

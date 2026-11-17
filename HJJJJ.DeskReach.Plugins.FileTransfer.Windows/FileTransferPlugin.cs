@@ -1,5 +1,4 @@
-﻿using ApeFree.Protocol.ApeFtp;
-using Shell32;
+﻿using Shell32;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,22 +19,22 @@ namespace HJJJJ.DeskReach.Plugins.FileTransfer.Windows
 
         public new event EventHandler<byte[]> OnDataReceived;
 
-        private ApeFtpSender ftpSender;
-        private ApeFtpReceiver ftpReceiver;
+       // private ApeFtpSender ftpSender;
+       // private ApeFtpReceiver ftpReceiver;
         public FileTransferPlugin(IFileTransferViewContext viewContext)
         {
             ViewContext = viewContext;
             OnDataReceived += FileTransferPlugin_OnDataReceived;
-            ftpSender = new ApeFtpSender((bytes) =>
-            {
-                Action(new FileTransferPacket(FunctionCode.Transfer, bytes));
-                //  client.Send(bytes);
-            });
-            ftpReceiver = new SimpleReceiver((bytes) =>
-            {
+            //ftpSender = new ApeFtpSender((bytes) =>
+            //{
+            //    Action(new FileTransferPacket(FunctionCode.Transfer, bytes));
+            //    //  client.Send(bytes);
+            //});
+            //ftpReceiver = new SimpleReceiver((bytes) =>
+            //{
 
-                Action(new FileTransferPacket(FunctionCode.Transfer, bytes));
-            });
+            //    Action(new FileTransferPacket(FunctionCode.Transfer, bytes));
+            //});
         }
 
         /// <summary>
@@ -50,14 +49,14 @@ namespace HJJJJ.DeskReach.Plugins.FileTransfer.Windows
             switch ((FunctionCode)e[0])
             {
                 case FunctionCode.Transfer:
-                    Transfer(new FileTransferPacket(e));
+                    //Transfer(new FileTransferPacket(e));
                     break;
                 case FunctionCode.RenameFiles:
-                    var fileTransferPacket = new FileTransferPacket(e);
-                    var sessionDir = Path.Combine(ftpReceiver.TransferCachePath, fileTransferPacket.SessionId);
-                    var filePath = Path.Combine(sessionDir, fileTransferPacket.SessionId);
-                    File.Move(filePath, Path.Combine(ftpReceiver.TransferCachePath, fileTransferPacket.FileName));
-                    Directory.Delete(sessionDir, true);
+                    //var fileTransferPacket = new FileTransferPacket(e);
+                    //var sessionDir = Path.Combine(ftpReceiver.TransferCachePath, fileTransferPacket.SessionId);
+                    //var filePath = Path.Combine(sessionDir, fileTransferPacket.SessionId);
+                    //File.Move(filePath, Path.Combine(ftpReceiver.TransferCachePath, fileTransferPacket.FileName));
+                    //Directory.Delete(sessionDir, true);
                     break;
                 case FunctionCode.GetLogicalDrivesReuqest:
                     Action(new DirectoriesPacket(FunctionCode.GetLogicalDrivesResponse, GetLogicalDrives()));
@@ -163,37 +162,37 @@ namespace HJJJJ.DeskReach.Plugins.FileTransfer.Windows
         }
 
 
-        public void Transfer(FileTransferPacket packet)
-        {
-            CommandCode command = (CommandCode)packet.Data.FirstOrDefault();
-            switch (command)
-            {
-                case CommandCode.DemandRequest:
+        //public void Transfer(FileTransferPacket packet)
+        //{
+        //    CommandCode command = (CommandCode)packet.Data.FirstOrDefault();
+        //    switch (command)
+        //    {
+        //        case CommandCode.DemandRequest:
 
-                    if (ftpReceiver.TransferCachePath == null) 
-                    {
-                        var savePath = GetSavePath();
-                        ftpReceiver.TransferCachePath = savePath;
-                    }
-                    ftpReceiver.Input(packet.Data);
-                    break;
-                case CommandCode.TransferRequest:
-                    ftpReceiver.Input(packet.Data);
-                    break;
-                case CommandCode.TransferResponse:
-                    var resp = new TransferResponse(packet.Data);
-                    if ((ResultCode)packet.Data.ElementAt(21) == ResultCode.Completed)
-                    {
-                        var session = ftpSender.GetSession(resp.Md5, resp.TotalLength);
-                        Action(new FileTransferPacket(FunctionCode.RenameFiles, new byte[0], Path.GetFileName(session.FilePath), $"{session.MD5.ToHexString()}-{session.TotalLength}"));
-                        ftpReceiver.TransferCachePath = null;
-                    }
-                    ftpSender.Input(packet.Data);
-                    break;
-                default:
-                    break;
-            }
-        }
+        //            if (ftpReceiver.TransferCachePath == null) 
+        //            {
+        //                var savePath = GetSavePath();
+        //                ftpReceiver.TransferCachePath = savePath;
+        //            }
+        //            ftpReceiver.Input(packet.Data);
+        //            break;
+        //        case CommandCode.TransferRequest:
+        //            ftpReceiver.Input(packet.Data);
+        //            break;
+        //        case CommandCode.TransferResponse:
+        //            var resp = new TransferResponse(packet.Data);
+        //            if ((ResultCode)packet.Data.ElementAt(21) == ResultCode.Completed)
+        //            {
+        //                var session = ftpSender.GetSession(resp.Md5, resp.TotalLength);
+        //                Action(new FileTransferPacket(FunctionCode.RenameFiles, new byte[0], Path.GetFileName(session.FilePath), $"{session.MD5.ToHexString()}-{session.TotalLength}"));
+        //                ftpReceiver.TransferCachePath = null;
+        //            }
+        //            ftpSender.Input(packet.Data);
+        //            break;
+        //        default:
+        //            break;
+        //    }
+        //}
 
 
         [DllImport("user32.dll")]
@@ -275,7 +274,7 @@ namespace HJJJJ.DeskReach.Plugins.FileTransfer.Windows
             {
                 Action(new FileTransferPacket(FunctionCode.SetSaveDirectory, new byte[0], savePath));
             }
-            ftpSender.SendFile(filePath);
+            //ftpSender.SendFile(filePath);
         }
     }
 }

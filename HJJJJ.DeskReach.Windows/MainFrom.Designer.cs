@@ -59,6 +59,9 @@
             // 
             // closableTabControl1
             // 
+            this.closableTabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.closableTabControl1.Location = new System.Drawing.Point(12, 160);
             this.closableTabControl1.Name = "closableTabControl1";
             this.closableTabControl1.SelectedIndex = 0;

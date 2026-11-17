@@ -1,152 +1,186 @@
-﻿using FreeImageAPI;
+using SharpGen.Runtime;
 using System;
+using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.IO;
-using System.Reflection.Emit;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
 using System.Windows.Forms;
-using Windows.Storage.Compression;
-using Windows.Storage.Streams;
-using static System.Net.Mime.MediaTypeNames;
 
-public class WindowsAPIScreenCapture
+namespace HJJJJ.DeskReach.Windows
 {
-    //这里是调用 Windows API函数来进行截图
-    //首先导入库文件
-    [System.Runtime.InteropServices.DllImportAttribute("gdi32.dll")]
-
-    //声明函数
-    private static extern IntPtr CreateDC
-     (
-         string Driver,   //驱动名称
-         string Device,   //设备名称
-         string Output,   //无用，可以设定为null
-         IntPtr PrintData //任意的打印机数据
-      );
-
-
-    [System.Runtime.InteropServices.DllImportAttribute("gdi32.dll")]
-    private static extern bool BitBlt(
-        IntPtr hdcDest,     //目标设备的句柄
-        int XDest,          //目标对象的左上角X坐标
-        int YDest,          //目标对象的左上角的Y坐标
-        int Width,          //目标对象的宽度
-        int Height,         //目标对象的高度
-        IntPtr hdcScr,      //源设备的句柄
-        int XScr,           //源设备的左上角X坐标
-        int YScr,           //源设备的左上角Y坐标
-        Int32 drRop         //光栅的操作值
-        );
-    [DllImport("gdi32.dll", EntryPoint = "GetDeviceCaps", SetLastError = true)]
-    private static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
-    private enum DeviceCap
+    /// <summary>优先 DXGI，失败时回退 GDI。每个会话持有一个实例，复用图像缓冲区。</summary>
+    public sealed class WindowsAPIScreenCapture : IDisposable
     {
-        VERTRES = 10,
-        PHYSICALWIDTH = 110,
-        SCALINGFACTORX = 114,
-        DESKTOPVERTRES = 117,
-    }
+        private const int DesktopHorzRes = 118;
+        private const int DesktopVertRes = 117;
+        private readonly object captureLock = new object();
+        private readonly bool useDesktopDuplication;
+        private readonly TurboJpegCodec codec = new TurboJpegCodec();
+        private readonly ScreenDeltaEncoder deltaEncoder = new ScreenDeltaEncoder();
+        private DesktopDuplicationCapture duplication;
+        private DateTime retryDuplicationAt;
+        private Bitmap desktopBitmap;
+        private Graphics desktopGraphics;
+        private Bitmap scaledBitmap;
+        private Graphics scaledGraphics;
+        private bool disposed;
 
-    /// <summary>
-    /// 获取屏幕缩放比例
-    /// </summary>
-    /// <returns></returns>
-    public static double GetScreenScalingFactor()
-    {
-        var g = Graphics.FromHwnd(IntPtr.Zero);
-        IntPtr desktop = g.GetHdc();
-        var physicalScreenHeight = GetDeviceCaps(desktop, (int)DeviceCap.DESKTOPVERTRES);
-        var screenScalingFactor = (double)physicalScreenHeight / Screen.PrimaryScreen.Bounds.Height;
-        return screenScalingFactor;
-    }
-    public static byte[] CaptureScreen(int quality)
-    {
-        //创建显示器的DC
-        IntPtr dcScreen = CreateDC("DISPLAY", null, null, (IntPtr)null);
+        public string CaptureBackend { get; private set; } = "Not initialized";
 
-        //由一个指定设备的句柄创建一个新的Graphics对象
-        Graphics g1 = Graphics.FromHdc(dcScreen);
-        int tmpWidth, tmpHeigth;
-
-        //tmpWidth = Screen.PrimaryScreen.Bounds.Width;
-        //tmpHeigth = Screen.PrimaryScreen.Bounds.Height;
-        var scalingFactor = GetScreenScalingFactor();
-        tmpWidth = Convert.ToInt32(Screen.PrimaryScreen.Bounds.Width * scalingFactor);
-        tmpHeigth = Convert.ToInt32(Screen.PrimaryScreen.Bounds.Height * scalingFactor);
-       var  MyImage = new Bitmap(tmpWidth, tmpHeigth, g1);
-        //创建位图图形对象
-        Graphics g2 = Graphics.FromImage(MyImage);
-        //获得窗体的上下文设备
-        IntPtr dc1 = g1.GetHdc();
-        //获得位图文件的上下文设备
-         IntPtr dc2 = g2.GetHdc();
-        //写入到位图
-        BitBlt(dc2, 0, 0, tmpWidth, tmpHeigth, dc1, 0, 0, 13369376);
-        //释放窗体的上下文设备
-        g1.ReleaseHdc(dc1);
-        //释放位图的上下文设备
-        g2.ReleaseHdc(dc2);
-         var bitmap = (Bitmap)MyImage.GetThumbnailImage(tmpWidth / 2, tmpHeigth / 2, null, IntPtr.Zero);
-
-
-        //BitmapData bitmapData = MyImage.LockBits(new Rectangle(0, 0, MyImage.Width, MyImage.Height), ImageLockMode.ReadWrite, MyImage.PixelFormat);
-        //var intPtr = bitmapData.Scan0;
-        //var bytes = new byte[MyImage.Width * MyImage.Height * 3];
-        //Marshal.Copy(intPtr, bytes, 0, bytes.Length);
-        //MyImage.UnlockBits(bitmapData);
-
-        //BitmapData newBitmapData = MyImage.LockBits(new Rectangle(0, 0, MyImage.Width, MyImage.Height), ImageLockMode.WriteOnly, MyImage.PixelFormat);
-
-        //Marshal.Copy(bytes, 0, newBitmapData.Scan0, bytes.Length);
-
-        //// 解锁Bitmap
-        //MyImage.UnlockBits(newBitmapData);
-        //MyImage.Dispose();
-        return ZipImage(bitmap, quality);
-    }
-
-    private static ImageCodecInfo GetEncoderInfo(string mimeType)
-    {
-        ImageCodecInfo[] encoders = ImageCodecInfo.GetImageEncoders();
-        for (int j = 0; j < encoders.Length; ++j)
+        public WindowsAPIScreenCapture(bool useDesktopDuplication = true)
         {
-            if (encoders[j].MimeType == mimeType)
-                return encoders[j];
+            this.useDesktopDuplication = useDesktopDuplication;
         }
-        return null;
-    }
 
-    private static byte[] ZipImage(System.Drawing.Bitmap image, long level)
-    {
-        ImageCodecInfo jpegEncoder = GetEncoder(ImageFormat.Jpeg);
-        EncoderParameters encoderParameters = new EncoderParameters(1);
-        EncoderParameter encoderParameter = new EncoderParameter(Encoder.Quality, level);
-        encoderParameters.Param[0] = encoderParameter;
-        using (MemoryStream ms = new MemoryStream())
+        [DllImport("gdi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern IntPtr CreateDC(string driver, string device, string output, IntPtr data);
+        [DllImport("gdi32.dll", SetLastError = true)]
+        private static extern bool DeleteDC(IntPtr dc);
+        [DllImport("gdi32.dll", SetLastError = true)]
+        private static extern bool BitBlt(IntPtr target, int x, int y, int width, int height,
+            IntPtr source, int sourceX, int sourceY, int operation);
+        [DllImport("gdi32.dll")]
+        private static extern int GetDeviceCaps(IntPtr dc, int index);
+
+        public static double GetScreenScalingFactor()
         {
-            image.Save(ms, jpegEncoder, encoderParameters);
-            var bytes = ms.ToArray();
-            image.Dispose();
-            return bytes;
-        }
-    }
-
-    private static ImageCodecInfo GetEncoder(ImageFormat format)
-    {
-
-        ImageCodecInfo[] codecs = ImageCodecInfo.GetImageDecoders();
-
-        foreach (ImageCodecInfo codec in codecs)
-        {
-            if (codec.FormatID == format.Guid)
+            using (var graphics = Graphics.FromHwnd(IntPtr.Zero))
             {
-                return codec;
+                IntPtr dc = graphics.GetHdc();
+                try
+                {
+                    return (double)GetDeviceCaps(dc, DesktopVertRes) / Screen.PrimaryScreen.Bounds.Height;
+                }
+                finally { graphics.ReleaseHdc(dc); }
             }
         }
-        return null;
+
+        public byte[] CaptureScreen(int quality)
+        {
+            lock (captureLock)
+            {
+                if (disposed) throw new ObjectDisposedException(nameof(WindowsAPIScreenCapture));
+                var frame = CaptureRawFrame(false);
+                return frame == null ? null : codec.Encode(ScaleFrame(frame, quality), quality);
+            }
+        }
+
+        public byte[] CaptureUpdate(int quality)
+        {
+            lock (captureLock)
+            {
+                if (disposed) throw new ObjectDisposedException(nameof(WindowsAPIScreenCapture));
+                bool allowCached = deltaEncoder.NeedsKeyFrame || deltaEncoder.Quality != Math.Max(1, Math.Min(100, quality));
+                var frame = CaptureRawFrame(allowCached);
+                if (frame == null) return null;
+                return deltaEncoder.Encode(ScaleFrame(frame, quality), quality)?.GetBytes();
+            }
+        }
+
+        public void RequestKeyFrame()
+        {
+            lock (captureLock)
+            {
+                if (!disposed) deltaEncoder.RequestKeyFrame();
+            }
+        }
+
+        private Bitmap CaptureRawFrame(bool allowCached)
+        {
+            Bitmap frame = null;
+            if (useDesktopDuplication && DateTime.UtcNow >= retryDuplicationAt)
+            {
+                try
+                {
+                    if (duplication == null) duplication = new DesktopDuplicationCapture();
+                    frame = duplication.CaptureFrame();
+                    CaptureBackend = "DXGI";
+                    if (frame == null) return allowCached ? duplication.CurrentFrame : null;
+                }
+                catch (Exception ex) when (ex is SharpGenException || ex is NotSupportedException ||
+                    ex is DllNotFoundException || ex is EntryPointNotFoundException)
+                {
+                    duplication?.Dispose(); duplication = null;
+                    retryDuplicationAt = DateTime.UtcNow.AddSeconds(5);
+                    if (CaptureBackend != "GDI") Console.WriteLine("DXGI 暂不可用，回退 GDI: " + ex.Message);
+                }
+            }
+            if (frame == null)
+            {
+                frame = CaptureGdiFrame();
+                CaptureBackend = "GDI";
+            }
+            return frame;
+        }
+
+        private Bitmap CaptureGdiFrame()
+        {
+            IntPtr source = CreateDC("DISPLAY", Screen.PrimaryScreen.DeviceName, null, IntPtr.Zero);
+            if (source == IntPtr.Zero) throw new Win32Exception(Marshal.GetLastWin32Error());
+            try
+            {
+                int width = GetDeviceCaps(source, DesktopHorzRes);
+                int height = GetDeviceCaps(source, DesktopVertRes);
+                if (desktopBitmap == null || desktopBitmap.Width != width || desktopBitmap.Height != height)
+                {
+                    desktopGraphics?.Dispose(); desktopGraphics = null;
+                    desktopBitmap?.Dispose(); desktopBitmap = null;
+                    desktopBitmap = new Bitmap(width, height, PixelFormat.Format32bppRgb);
+                    desktopGraphics = Graphics.FromImage(desktopBitmap);
+                }
+                IntPtr target = desktopGraphics.GetHdc();
+                try
+                {
+                    if (!BitBlt(target, 0, 0, width, height, source, 0, 0, 0x00CC0020))
+                        throw new Win32Exception(Marshal.GetLastWin32Error());
+                }
+                finally { desktopGraphics.ReleaseHdc(target); }
+                return desktopBitmap;
+            }
+            finally
+            {
+                // CreateDC 对应 DeleteDC；Graphics.GetHdc 对应 ReleaseHdc，不能混用。
+                DeleteDC(source);
+            }
+        }
+
+        private Bitmap ScaleFrame(Bitmap frame, int quality)
+        {
+            // High / Quality 保留原始像素；其余档位继续使用半分辨率，保留默认性能。
+            int divisor = quality >= 80 ? 1 : 2;
+            int width = Math.Max(1, frame.Width / divisor);
+            int height = Math.Max(1, frame.Height / divisor);
+            if (scaledBitmap == null || scaledBitmap.Width != width || scaledBitmap.Height != height)
+            {
+                scaledGraphics?.Dispose(); scaledGraphics = null;
+                scaledBitmap?.Dispose(); scaledBitmap = null;
+                scaledBitmap = new Bitmap(width, height, PixelFormat.Format24bppRgb);
+                scaledGraphics = Graphics.FromImage(scaledBitmap);
+                scaledGraphics.CompositingMode = CompositingMode.SourceCopy;
+                scaledGraphics.InterpolationMode = InterpolationMode.Bilinear;
+                scaledGraphics.PixelOffsetMode = PixelOffsetMode.HighSpeed;
+            }
+            // 快速缩放并复用目标缓冲区，替代每帧 GetThumbnailImage。
+            if (divisor == 1) scaledGraphics.DrawImageUnscaled(frame, 0, 0);
+            else scaledGraphics.DrawImage(frame, new Rectangle(0, 0, width, height),
+                0, 0, frame.Width, frame.Height, GraphicsUnit.Pixel);
+            return scaledBitmap;
+        }
+
+        public void Dispose()
+        {
+            lock (captureLock)
+            {
+                if (disposed) return;
+                disposed = true;
+                codec.Dispose(); deltaEncoder.Dispose();
+                duplication?.Dispose(); duplication = null;
+                scaledGraphics?.Dispose(); scaledGraphics = null;
+                scaledBitmap?.Dispose(); scaledBitmap = null;
+                desktopGraphics?.Dispose(); desktopGraphics = null;
+                desktopBitmap?.Dispose(); desktopBitmap = null;
+            }
+        }
     }
-
-
 }

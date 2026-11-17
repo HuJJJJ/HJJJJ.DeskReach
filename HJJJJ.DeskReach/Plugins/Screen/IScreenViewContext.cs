@@ -13,8 +13,10 @@ namespace HJJJJ.DeskReach.Plugins.Screen
         /// </summary>
         Rectangle ScreenViewBounds { get; set; }
 
+        // 传递 ScreenFrame v2（完整 JPEG 关键帧或 JPEG 区域更新），不再是 GZip 数据。
         byte[] GetImage(int quality);
         void ShowImage(byte[] image);
+        void RequestKeyFrame();
 
 
     }

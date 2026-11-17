@@ -33,25 +33,33 @@ internal static class BitmapExtendsion
     /// </summary>
     /// <param name="Bytes"></param>
     /// <returns></returns>
-    public static Bitmap ToBitmap(this byte[] Bytes)
+    public static unsafe Bitmap ToBitmap(this byte[] Bytes)
     {
-        MemoryStream stream = null;
-        try
+        using (var stream = new MemoryStream(Bytes))
+        using (var decoded = new Bitmap(stream))
         {
-            stream = new MemoryStream(Bytes);
-            return new Bitmap(stream);
-        }
-        catch (ArgumentNullException ex)
-        {
-            throw ex;
-        }
-        catch (ArgumentException ex)
-        {
-            throw ex;
-        }
-        finally
-        {
-            stream.Close();
+            // Bitmap(stream) 依赖流的寿命；复制原始像素得到独立位图。
+            // 用 LockBits 拷贝也避免 new Bitmap(decoded) 隐含的 GDI+ 绘图转换。
+            var result = new Bitmap(decoded.Width, decoded.Height, PixelFormat.Format32bppRgb);
+            try
+            {
+                var bounds = new Rectangle(0, 0, decoded.Width, decoded.Height);
+                var source = decoded.LockBits(bounds, ImageLockMode.ReadOnly, PixelFormat.Format32bppRgb);
+                try
+                {
+                    var target = result.LockBits(bounds, ImageLockMode.WriteOnly, PixelFormat.Format32bppRgb);
+                    try
+                    {
+                        for (int y = 0; y < decoded.Height; y++)
+                            Buffer.MemoryCopy((byte*)source.Scan0 + y * source.Stride,
+                                (byte*)target.Scan0 + y * target.Stride, Math.Abs(target.Stride), decoded.Width * 4);
+                    }
+                    finally { result.UnlockBits(target); }
+                }
+                finally { decoded.UnlockBits(source); }
+                return result;
+            }
+            catch { result.Dispose(); throw; }
         }
     }
 

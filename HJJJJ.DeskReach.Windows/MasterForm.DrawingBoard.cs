@@ -59,7 +59,8 @@ namespace HJJJJ.DeskReach.Windows
 
         private void TransparentPanel_MouseDown(object sender, MouseEventArgs e)
         {
-            if (client.IsDrawing && Control.MouseButtons == MouseButtons.Left)
+            if (client.IsDrawing && Control.MouseButtons == MouseButtons.Left &&
+                TryGetRemotePoint(e.Location, out Point _))
                 mouseTrack.Add(new LineSegment()
                 {
                     Color = LineSegmentColor,
@@ -74,15 +75,11 @@ namespace HJJJJ.DeskReach.Windows
         protected void OnMouseMove(object sender, MouseEventArgs e)
         {
       
-            if (client.IsDrawing && Control.MouseButtons == MouseButtons.Left)
+            if (client.IsDrawing && Control.MouseButtons == MouseButtons.Left && mouseTrack.Count > 0 &&
+                TryGetRemotePoint(e.Location, out Point currentPoint))
             {
                 PointerViewBounds = Screen.GetBounds(this);
                 base.OnMouseMove(e);
-                Point currentPoint = new Point()
-                {
-                    X = e.Location.X * 100 / pictureBox.Width,
-                    Y = e.Location.Y * 100 / pictureBox.Height
-                };
                 mouseTrack[mouseTrack.Count - 1].Tracks.Add(currentPoint);  // 添加当前鼠标位置到鼠标轨迹集合
                 isInvalidated = true;
                 SendStroke();

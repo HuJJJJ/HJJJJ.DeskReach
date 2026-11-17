@@ -16,6 +16,8 @@ namespace HJJJJ.DeskReach
 
         protected override int CalculatePacketLength(byte[] bytes)
         {
+            // TCP 可能只送来包头，长度字段还没收齐时保留缓存继续等待。
+            if (bytes == null || bytes.Length < 8) return 0;
             try
             {
                 var len = BitConverter.ToInt32(bytes, 4);

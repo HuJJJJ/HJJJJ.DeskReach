@@ -63,6 +63,13 @@
     <Compile Include="CustomControl\ClosableTabPage.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="CustomControl\RemoteScreenPictureBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DesktopDuplicationCapture.cs" />
+    <Compile Include="TurboJpegCodec.cs" />
+    <Compile Include="ScreenDeltaEncoder.cs" />
+    <Compile Include="ScreenFrameDecoder.cs" />
     <Compile Include="FileTransferForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -159,6 +166,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Vortice.Direct3D11">
+      <Version>1.9.143</Version>
+    </PackageReference>
     <PackageReference Include="ApeFree.ApeForms.Forms">
       <Version>0.11.3</Version>
     </PackageReference>
@@ -175,6 +185,16 @@
       <Version>1.6.5.1</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="runtimes\win-x64\native\turbojpeg.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="runtimes\win-x86\native\turbojpeg.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="third-party\libjpeg-turbo\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

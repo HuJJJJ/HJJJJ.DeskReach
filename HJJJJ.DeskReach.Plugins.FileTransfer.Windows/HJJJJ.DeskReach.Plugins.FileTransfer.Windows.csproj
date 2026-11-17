@@ -53,10 +53,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\.NET\ApeFree.Protocols\ApeFree.Protocol.ApeFtp\ApeFree.Protocol.ApeFtp.csproj">
-      <Project>{463CC4CE-03B5-41F3-BDAD-0C46F807A9B0}</Project>
-      <Name>ApeFree.Protocol.ApeFtp</Name>
-    </ProjectReference>
     <ProjectReference Include="..\HJJJJ.DeskReach\HJJJJ.DeskReach.csproj">
       <Project>{2e704b6a-fd38-4fc1-aa32-ba6905a0fcc8}</Project>
       <Name>HJJJJ.DeskReach</Name>

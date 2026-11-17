@@ -84,6 +84,11 @@ namespace HJJJJ.DeskReach
 
         public void Dispose()
         {
+            foreach (var plugin in Plugins.ToArray())
+            {
+                if (plugin is IDisposable disposable) disposable.Dispose();
+                else plugin.DisablePlugin();
+            }
             client.Dispose();
             server.Dispose();
         }

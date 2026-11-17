@@ -1,0 +1,69 @@
+﻿{
+    "SampleFrames":  100,
+    "JpegQuality":  50,
+    "SourceSize":  "2560x1440",
+    "EncodedSize":  "1280x720",
+    "TargetWidth":  1478,
+    "IncludesNetwork":  false,
+    "CaptureAndJpeg":  {
+                           "MeanMs":  60.59,
+                           "P50Ms":  62.95,
+                           "P95Ms":  70.8,
+                           "MaxMs":  73.38,
+                           "Over25Ms":  100,
+                           "Over33Ms":  100
+                       },
+    "Gzip":  {
+                 "MeanMs":  2.54,
+                 "P50Ms":  2.33,
+                 "P95Ms":  4.12,
+                 "MaxMs":  6.4,
+                 "Over25Ms":  0,
+                 "Over33Ms":  0
+             },
+    "Unzip":  {
+                  "MeanMs":  1.16,
+                  "P50Ms":  0.86,
+                  "P95Ms":  4.49,
+                  "MaxMs":  5.17,
+                  "Over25Ms":  0,
+                  "Over33Ms":  0
+              },
+    "Decode":  {
+                   "MeanMs":  2.69,
+                   "P50Ms":  2.55,
+                   "P95Ms":  3.52,
+                   "MaxMs":  5.2,
+                   "Over25Ms":  0,
+                   "Over33Ms":  0
+               },
+    "Resize":  {
+                   "MeanMs":  44.55,
+                   "P50Ms":  43.6,
+                   "P95Ms":  50.41,
+                   "MaxMs":  64.05,
+                   "Over25Ms":  100,
+                   "Over33Ms":  100
+               },
+    "MeanJpegBytes":  93736,
+    "MeanGzipBytes":  86774,
+    "GzipSavedPercent":  7.43,
+    "Before":  {
+                   "GdiObjects":  8,
+                   "PrivateMB":  62.78515625
+               },
+    "After100":  {
+                     "GdiObjects":  111,
+                     "PrivateMB":  95.03125
+                 },
+    "AfterForcedGc":  {
+                          "GdiObjects":  108,
+                          "PrivateMB":  63.3515625
+                      },
+    "TimerAt25Ms":  {
+                        "Callbacks":  63,
+                        "MaxConcurrent":  3,
+                        "MeanMs":  65.920553968253955,
+                        "MaxMs":  83.1025
+                    }
+}

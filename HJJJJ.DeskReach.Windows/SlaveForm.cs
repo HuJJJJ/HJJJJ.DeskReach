@@ -24,6 +24,8 @@ namespace HJJJJ.DeskReach.Windows
             InitializeComponent();
             this.client = _client;
             var form = new MasterForm(client);
+            // 此窗体只是受控端插件的隐藏视图，也需要随会话一起释放。
+            Disposed += (sender, args) => form.Dispose();
             cmd = new CommandPromptPlugin(new CMDForm(client, null));
             pointer = new PointerPlugin(form);
             screen = new ScreenPlugin(form);

@@ -13,6 +13,7 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
+            if (disposing) DisposeScreenResources();
             if (disposing && (components != null))
             {
                 components.Dispose();
@@ -32,7 +33,7 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.screenPanel = new System.Windows.Forms.Panel();
-            this.pictureBox = new System.Windows.Forms.PictureBox();
+            this.pictureBox = new HJJJJ.DeskReach.Windows.RemoteScreenPictureBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
@@ -129,6 +130,6 @@
         private System.Windows.Forms.ToolStrip toolStrip;
         private System.Windows.Forms.ColorDialog colorDialog;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
-        private System.Windows.Forms.PictureBox pictureBox;
+        private HJJJJ.DeskReach.Windows.RemoteScreenPictureBox pictureBox;
     }
 }
